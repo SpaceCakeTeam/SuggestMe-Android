@@ -1,5 +1,6 @@
 package me.federicomaggi.suggestme;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -10,9 +11,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 
 public class CategoryChoice extends ActionBarActivity {
+
+    public static final String SOCIAL_TAG = "social";
+    public static final String GOODS_TAG = "goods";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +66,31 @@ public class CategoryChoice extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_category_choice, container, false);
+
+            ImageButton m_social_button = (ImageButton) rootView.findViewById(R.id.social_button);
+            ImageButton m_goods_button  = (ImageButton) rootView.findViewById(R.id.goods_button);
+
+            m_social_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(getActivity(),QuestionForm.class);
+
+                    i.putExtra(CategoryChoice.SOCIAL_TAG,true);
+                    i.putExtra(CategoryChoice.GOODS_TAG,false); // safecode
+                    startActivity(i);
+                }
+            });
+            m_goods_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(getActivity(),QuestionForm.class);
+
+                    i.putExtra(CategoryChoice.GOODS_TAG,true);
+                    i.putExtra(CategoryChoice.SOCIAL_TAG,false); // safecode
+                    startActivity(i);
+                }
+            });
+
             return rootView;
         }
     }
