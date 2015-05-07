@@ -5,31 +5,59 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 
 public class QuestionForm extends ActionBarActivity {
+
+    public static SuggestItem.SuggestCategory new_question_category;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_form);
 
-        TextView m_txtview_TEST = (TextView) findViewById(R.id.testlbl);
         Intent i = getIntent();
 
-        if( i.getBooleanExtra(CategoryChoice.SOCIAL_TAG, false) ){
+        /* TEST */
+        TextView m_txtview_TEST = (TextView) findViewById(R.id.testlbl);
+        /********/
+
+        if( i.getBooleanExtra(SuggestItem.SOCIAL_TAG, false) ){
 
             /* Set SOCIAL flag to request object */
-            m_txtview_TEST.setText( m_txtview_TEST.getText().toString().concat(" SOCIAL") );
+            new_question_category = SuggestItem.SuggestCategory.SOCIAL;
 
+            m_txtview_TEST.setText(m_txtview_TEST.getText().toString().concat(" SOCIAL"));
 
         }else{
 
             /* Set GOODS flag to request object */
-            m_txtview_TEST.setText( m_txtview_TEST.getText().toString().concat(" GOODS") );
+            new_question_category = SuggestItem.SuggestCategory.GOODS;
 
+            m_txtview_TEST.setText( m_txtview_TEST.getText().toString().concat(" GOODS") );
         }
+
+
+        Button m_test_button = (Button) findViewById(R.id.testbtn);
+
+        m_test_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                SuggestItem si = new SuggestItem("TITOLO","CONTENUTO", new_question_category);
+
+
+
+            }
+        });
+
+
+
+
+
     }
 
 

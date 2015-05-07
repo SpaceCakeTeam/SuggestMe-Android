@@ -17,9 +17,6 @@ import android.widget.ImageButton;
 
 public class CategoryChoice extends ActionBarActivity {
 
-    public static final String SOCIAL_TAG = "social";
-    public static final String GOODS_TAG = "goods";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,8 +72,8 @@ public class CategoryChoice extends ActionBarActivity {
                 public void onClick(View v) {
                     Intent i = new Intent(getActivity(),QuestionForm.class);
 
-                    i.putExtra(CategoryChoice.SOCIAL_TAG,true);
-                    i.putExtra(CategoryChoice.GOODS_TAG,false); // safecode
+                    i.putExtra(SuggestItem.SOCIAL_TAG,true);
+                    i.putExtra(SuggestItem.GOODS_TAG,false); // safecode
                     startActivity(i);
                 }
             });
@@ -85,8 +82,8 @@ public class CategoryChoice extends ActionBarActivity {
                 public void onClick(View v) {
                     Intent i = new Intent(getActivity(),QuestionForm.class);
 
-                    i.putExtra(CategoryChoice.GOODS_TAG,true);
-                    i.putExtra(CategoryChoice.SOCIAL_TAG,false); // safecode
+                    i.putExtra(SuggestItem.GOODS_TAG,true);
+                    i.putExtra(SuggestItem.SOCIAL_TAG,false); // safecode
                     startActivity(i);
                 }
             });
