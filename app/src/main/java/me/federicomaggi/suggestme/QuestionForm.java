@@ -43,11 +43,19 @@ public class QuestionForm extends ActionBarActivity {
 
         Button m_test_button = (Button) findViewById(R.id.testbtn);
 
+        /* This should be done on keyboard "send" button */
         m_test_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 SuggestItem si = new SuggestItem("TITOLO","CONTENUTO", new_question_category);
+
+                HTTPHandler m_http_handler = new HTTPHandler();
+
+                m_http_handler.setSuggestItemToSend(si);
+                m_http_handler.sendSuggestRequest();
+
+
 
 
 
