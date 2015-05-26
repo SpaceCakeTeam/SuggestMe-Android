@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:fillViewport="true"
     android:gravity="fill_vertical"
-    tools:context="me.federicomaggi.suggestme.SceltaCategorie$PlaceholderFragment">
+    tools:context="me.federicomaggi.suggestme.SceltaCategorie.SceltaCategorieFragment">
 
     <ImageButton
         android:layout_width="fill_parent"

@@ -8,15 +8,13 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/AppTheme" >
-
-        <activity
-            android:name=".SceltaCategorie" >
+        <activity android:name=".SceltaCategorie" >
             <intent-filter>
                 <action android:name="android.intent.action.Main" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>
