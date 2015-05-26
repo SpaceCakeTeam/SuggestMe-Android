@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -12,13 +13,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 
 public class SceltaCategorie extends ActionBarActivity
@@ -34,6 +39,15 @@ public class SceltaCategorie extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scelta_categorie);
+
+        // White status bar for Lollipop
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            Window window = this.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(this.getResources().getColor(R.color.primary));
+        }
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -83,17 +97,23 @@ public class SceltaCategorie extends ActionBarActivity
     }
 
     public void restoreActionBar() {
-        Log.d("SM_RESTORE_ACTION_BAR","here i am!");
-
         ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
 
+        ImageView mImageV = new ImageView(actionBar.getThemedContext());
+        mImageV.setScaleType(ImageView.ScaleType.CENTER);
+        mImageV.setImageResource(R.drawable.navbar_logo);
 
+        ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(
+                ActionBar.LayoutParams.WRAP_CONTENT,
+                ActionBar.LayoutParams.WRAP_CONTENT,
+                Gravity.RIGHT | Gravity.CENTER_VERTICAL
+        );
+        layoutParams.rightMargin = 10;
 
-        //actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.navbar_logo));
-        //actionBar.setBackgroundDrawable(background);
-
-        actionBar.setIcon(R.drawable.navbar_logo);
+        mImageV.setLayoutParams(layoutParams);
+        actionBar.setCustomView(mImageV);
     }
 
     @Override
