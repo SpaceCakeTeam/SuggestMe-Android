@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,8 +30,6 @@ public class SceltaCategorie extends ActionBarActivity
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-    private CharSequence mTitle;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +45,8 @@ public class SceltaCategorie extends ActionBarActivity
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, SceltaCategorieFragment.newInstance())
                 .commit();
+
+        restoreActionBar();
     }
 
     @Override
@@ -81,33 +82,14 @@ public class SceltaCategorie extends ActionBarActivity
         }
     }
 
-/*
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 0:
-                mTitle = getString(R.string.ham_lemiedomande);
-                break;
-            case 1:
-                mTitle = getString(R.string.ham_categorie);
-                break;
-            case 2:
-                mTitle = getString(R.string.ham_login);
-                break;
-            case 3:
-                mTitle = getString(R.string.ham_about);
-                break;
-        }
-    }
-*/
     public void restoreActionBar() {
+        Log.d("SM_RESTORE_ACTION_BAR","here i am!");
+
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
 
-        BitmapDrawable background = new BitmapDrawable (BitmapFactory.decodeResource(getResources(),
-                R.drawable.navbar_logo));
 
-        //actionBar.setTitle(mTitle);
+
         //actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.navbar_logo));
         //actionBar.setBackgroundDrawable(background);
 
@@ -119,17 +101,6 @@ public class SceltaCategorie extends ActionBarActivity
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, SceltaCategorieFragment.newInstance())
                 .commit();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
