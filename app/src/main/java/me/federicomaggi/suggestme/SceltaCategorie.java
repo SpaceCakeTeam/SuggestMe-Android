@@ -1,7 +1,11 @@
 package me.federicomaggi.suggestme;
 
 import android.app.Activity;
+import android.graphics.BitmapFactory;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -34,7 +38,6 @@ public class SceltaCategorie extends ActionBarActivity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
 
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
@@ -78,6 +81,7 @@ public class SceltaCategorie extends ActionBarActivity
         }
     }
 
+/*
     public void onSectionAttached(int number) {
         switch (number) {
             case 0:
@@ -94,25 +98,27 @@ public class SceltaCategorie extends ActionBarActivity
                 break;
         }
     }
-
+*/
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
+
+        BitmapDrawable background = new BitmapDrawable (BitmapFactory.decodeResource(getResources(),
+                R.drawable.navbar_logo));
+
+        //actionBar.setTitle(mTitle);
+        //actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.navbar_logo));
+        //actionBar.setBackgroundDrawable(background);
+
+        actionBar.setIcon(R.drawable.navbar_logo);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.scelta_categorie, menu);
-            restoreActionBar();
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
+    public void onBackPressed(){
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, SceltaCategorieFragment.newInstance())
+                .commit();
     }
 
     @Override
