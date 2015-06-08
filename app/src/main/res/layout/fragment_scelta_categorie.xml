@@ -10,6 +10,7 @@
     android:orientation="vertical"
     android:fillViewport="true"
     android:gravity="fill_vertical"
+    android:background="@color/palette_white"
     tools:context="me.federicomaggi.suggestme.SceltaCategorie.SceltaCategorieFragment">
 
     <ImageButton

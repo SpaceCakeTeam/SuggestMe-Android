@@ -4,16 +4,31 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/ic_launcher_suggestme"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/AppTheme" >
-        <activity android:name=".SceltaCategorie" >
-            <intent-filter>
-                <action android:name="android.intent.action.Main" />
+        android:theme="@style/AppTheme"
+        android:configChanges="orientation" >
 
+        <activity android:name=".SceltaCategorie"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <activity android:name=".SplashScreenActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name=".TutorialActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_tutorial" >
         </activity>
     </application>
 

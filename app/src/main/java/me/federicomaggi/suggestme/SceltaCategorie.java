@@ -1,22 +1,17 @@
 package me.federicomaggi.suggestme;
 
 import android.app.Activity;
-import android.graphics.BitmapFactory;
-import android.graphics.Shader;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
@@ -26,7 +21,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 
-public class SceltaCategorie extends ActionBarActivity
+public class SceltaCategorie extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
                    LeMieDomandeFragment.OnFragmentInteractionListener,
                    LoginFragment.OnFragmentInteractionListener,
@@ -46,7 +41,7 @@ public class SceltaCategorie extends ActionBarActivity
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(this.getResources().getColor(R.color.primary));
+            window.setStatusBarColor(this.getResources().getColor(R.color.palette_white));
         }
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -108,7 +103,7 @@ public class SceltaCategorie extends ActionBarActivity
         ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(
                 ActionBar.LayoutParams.WRAP_CONTENT,
                 ActionBar.LayoutParams.WRAP_CONTENT,
-                Gravity.RIGHT | Gravity.CENTER_VERTICAL
+                Gravity.END | Gravity.CENTER_VERTICAL
         );
         layoutParams.rightMargin = 10;
 
@@ -150,25 +145,71 @@ public class SceltaCategorie extends ActionBarActivity
             ImageButton mGoodsButton  = (ImageButton) rootView.findViewById(R.id.goods_imgbn);
 
 
-            mSocialButton.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v){
+            mSocialButton.setOnTouchListener(new View.OnTouchListener(){
 
-                    getFragmentManager().beginTransaction()
-                            .replace(R.id.container, ChatFragment.newInstance(ChatFragment.SOCIAL))
-                            .commit();
+                @Override
+                public boolean onTouch(View v, MotionEvent event){
+
+                    ImageButton view;
+
+                    switch (event.getAction()) {
+
+                        case MotionEvent.ACTION_DOWN:
+                            view = (ImageButton) v;
+                            view.getBackground().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
+                            v.invalidate();
+                            return true;
+
+                        case MotionEvent.ACTION_UP:
+
+                            getFragmentManager().beginTransaction()
+                                    .replace(R.id.container, ChatFragment.newInstance(ChatFragment.SOCIAL))
+                                    .commit();
+
+                            view = (ImageButton) v;
+                            view.getBackground().clearColorFilter();
+                            view.invalidate();
+                            return true;
+
+                        default:
+                            return false;
+                    }
                 }
             });
 
-            mGoodsButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            mGoodsButton.setOnTouchListener(new View.OnTouchListener(){
 
-                    getFragmentManager().beginTransaction()
-                            .replace(R.id.container, ChatFragment.newInstance(ChatFragment.GOODS))
-                            .commit();
+                @Override
+                public boolean onTouch(View v, MotionEvent event){
+
+                    ImageButton view;
+
+                    switch (event.getAction()){
+                        case MotionEvent.ACTION_DOWN:
+                            view = (ImageButton) v;
+                            view.getBackground().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
+                            v.invalidate();
+                            return true;
+
+                        case MotionEvent.ACTION_UP:
+                            getFragmentManager().beginTransaction()
+                                    .replace(R.id.container, ChatFragment.newInstance(ChatFragment.GOODS))
+                                    .commit();
+
+                            view = (ImageButton) v;
+                            view.getBackground().clearColorFilter();
+                            view.invalidate();
+                            return true;
+
+                        default:
+                            return false;
+                    }
                 }
+
             });
+
+
+
 
             return rootView;
         }
@@ -176,8 +217,7 @@ public class SceltaCategorie extends ActionBarActivity
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            //((SceltaCategorie) activity).onSectionAttached(
-            //       getArguments().getInt(ARG_SECTION_NUMBER));
+
         }
     }
 
