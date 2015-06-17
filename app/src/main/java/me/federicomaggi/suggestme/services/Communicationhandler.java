@@ -2,9 +2,11 @@ package me.federicomaggi.suggestme.services;
 
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import me.federicomaggi.suggestme.model.Question;
@@ -134,6 +136,27 @@ public class CommunicationHandler {
     }
 
 
+    public JSONObject getSuggests() {
+
+        JSONObject data     = new JSONObject();
+        JSONObject userdata = new JSONObject();
+        JSONObject myreply  = null;
+
+        try {
+            // Retrieve from DB an array of QUestion
+            JSONArray questionid = new JSONArray(Question.retrieveMyQuestions()) ;
+
+            data.put("userid", User.getUserInstance().getId());
+            data.put("userdata",questionid);
+
+            myreply = serviceRequest(GET_SUGGESTS_URI,data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return myreply;
+    }
 
     /**
      *  Service request handler

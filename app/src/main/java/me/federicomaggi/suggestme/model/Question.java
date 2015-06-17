@@ -5,6 +5,8 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import me.federicomaggi.suggestme.services.CommunicationHandler;
 
 /**
@@ -31,7 +33,7 @@ public class Question {
 
         CommunicationHandler comm = CommunicationHandler.getCommunicationHandler();
         JSONObject questionData = comm.askQuestion(this);
-        JSONObject replyData = new JSONObject();
+        JSONObject replyData;
 
         if( questionData == null || !questionData.has("data") )
             return;
@@ -95,8 +97,21 @@ public class Question {
 
     private void storeQuestionInDatabase() {
 
-        // TODO -- store the question data in focal SQLite DB
-        Log.d("COMMIT TO DB","Hell yeah here we are");
+        // TODO -- store the question data in local SQLite DB
+        Log.d("QUESTION_COMMIT_DB","Hell yeah here we are");
     }
 
+
+    public static ArrayList<Integer> retrieveMyQuestions() {
+
+        ArrayList<Integer> mylist = new ArrayList<Integer>();
+
+        // TODO -- retrieve question data from local SQLite DB
+
+
+        mylist.add(1);
+        mylist.add(2);
+
+        return mylist;
+    }
 }

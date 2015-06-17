@@ -1,10 +1,14 @@
 package me.federicomaggi.suggestme.model;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import me.federicomaggi.suggestme.PreferencesManager;
+import me.federicomaggi.suggestme.R;
 import me.federicomaggi.suggestme.services.CommunicationHandler;
 
 /**
@@ -48,12 +52,40 @@ public class User {
 
         if( userInstance == null )
         {
-            // TODO -- Search in DB
-            // updateUserInformationFromSocial
+            // TODO -- Search in SharedPreferences
+            if( PreferencesManager.getPreferencesManagerInstance().checkForKey("USERDATA","user") ) {
+                Log.d("USER","Found user");
 
-            // none found
-            userInstance = new User(true,Gender.u,"","",0,"");
-            getMyIDFromServer(userInstance);
+
+                try {
+                    JSONObject userjson = PreferencesManager.getPreferencesManagerInstance()
+                                                            .readJSONObjFromFile("USERDATA", "user");
+
+                    String gender = userjson.getString("gender");
+
+                    Gender g = getGenderFromString(gender);
+
+                    userInstance = new User(userjson.getBoolean("anonflag"),
+                                            g,
+                                            userjson.getString("name"),
+                                            userjson.getString("surname"),
+                                            userjson.getInt("birthdate"),
+                                            userjson.getString("email")
+                                );
+                    userInstance.setID(userjson.getInt("id"));
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            else {
+                Log.d("USER","User not found");
+                userInstance = new User(true,Gender.u,"","",0,"");
+                getMyIDFromServer(userInstance);
+
+                PreferencesManager.getPreferencesManagerInstance()
+                        .writeJSONObjOnFile("USERDATA", "user", userInstance.serializeInJSON());
+            }
         }
 
         return userInstance;
@@ -93,7 +125,6 @@ public class User {
 
     private static void getMyIDFromServer( User who ) {
 
-        Log.d("GETTING_FROM_ID", "AD");
         CommunicationHandler comm = CommunicationHandler.getCommunicationHandler();
         JSONObject user = comm.registration();
 
@@ -109,13 +140,46 @@ public class User {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
-    public void updateUserInformationFromSocial( String name, String surname, int birth_date, String email, Gender gender ) {
+    public void updateUserInformationFromSocial( String name, String surname, int birthdate, String email, Gender gender ) {
+        this.name = name;
+        this.surname = surname;
+        this.birth_date = birthdate;
+        this.email = email;
+        this.gender = gender;
 
-
+        // TODO -- Send data to server
     }
 
+    private JSONObject serializeInJSON() {
+        JSONObject theUser = new JSONObject();
+
+        try {
+
+            theUser.put("id", this.id);
+            theUser.put("anonflag", this.anonflag);
+            theUser.put("name", this.name);
+            theUser.put("surname", this.surname);
+            theUser.put("birthdate", this.birth_date);
+            theUser.put("gender", this.gender.toString());
+            theUser.put("email",this.email);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return theUser;
+    }
+
+    private static Gender getGenderFromString( String genderstring ) {
+
+        switch (genderstring.toLowerCase()){
+            case "m":
+                return Gender.m;
+            case "f":
+                return Gender.f;
+            default:
+                return Gender.u;
+        }
+    }
 }

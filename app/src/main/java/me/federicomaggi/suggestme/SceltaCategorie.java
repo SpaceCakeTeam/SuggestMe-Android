@@ -37,6 +37,8 @@ public class SceltaCategorie extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scelta_categorie);
 
+        PreferencesManager.getPreferencesManagerInstance().setContext(this);
+
         // White status bar for Lollipop
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 

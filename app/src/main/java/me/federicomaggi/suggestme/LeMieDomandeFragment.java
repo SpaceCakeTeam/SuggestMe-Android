@@ -8,6 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.json.JSONException;
+
+import me.federicomaggi.suggestme.model.Suggest;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,7 +48,14 @@ public class LeMieDomandeFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-       return inflater.inflate(R.layout.fragment_le_mie_domande, container, false);
+        try {
+            Suggest.getSuggestsFromServer();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return inflater.inflate(R.layout.fragment_le_mie_domande, container, false);
     }
 
     public void onButtonPressed(Uri uri) {
