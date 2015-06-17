@@ -1,12 +1,15 @@
 package me.federicomaggi.suggestme.tutorialpages;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import me.federicomaggi.suggestme.R;
 import me.federicomaggi.suggestme.SceltaCategorie;
@@ -53,8 +56,7 @@ public class TutorialPageFragment extends Fragment {
                 break;
 
             default:
-                Log.e(getResources().getString(R.string.tutorial_err_lbl),
-                        getResources().getString(R.string.tutorial_err_pagenotfound));
+                Log.e(getResources().getString(R.string.tutorial_err_lbl), getResources().getString(R.string.tutorial_err_pagenotfound));
                 break;
         }
 
@@ -63,12 +65,32 @@ public class TutorialPageFragment extends Fragment {
 
         if( mTutorialPage == LOGINPAGE ){
 
-            rootView.findViewById(R.id.nonora_imgbtn).setOnClickListener(new View.OnClickListener() {
+            rootView.findViewById(R.id.nonora_imgbtn).setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public void onClick(View v) {
+                public boolean onTouch(View v, MotionEvent event) {
 
-                    Intent i = new Intent(getActivity(), SceltaCategorie.class);
-                    startActivity(i);
+                    ImageButton view;
+
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            view = (ImageButton) v;
+                            view.getBackground().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
+                            v.invalidate();
+                            return true;
+
+                        case MotionEvent.ACTION_UP:
+
+                            Intent i = new Intent(getActivity(), SceltaCategorie.class);
+                            startActivity(i);
+
+                            view = (ImageButton) v;
+                            view.getBackground().clearColorFilter();
+                            view.invalidate();
+                            return true;
+
+                        default:
+                            return false;
+                    }
                 }
             });
 

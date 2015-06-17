@@ -20,6 +20,8 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import me.federicomaggi.suggestme.model.User;
+
 
 public class SceltaCategorie extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
@@ -54,6 +56,9 @@ public class SceltaCategorie extends AppCompatActivity
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, SceltaCategorieFragment.newInstance())
                 .commit();
+
+        User.getUserInstance();
+
 
         restoreActionBar();
     }

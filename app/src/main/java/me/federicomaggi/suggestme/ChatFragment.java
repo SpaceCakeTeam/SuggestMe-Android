@@ -8,6 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONException;
+
+import java.util.ArrayList;
+
+import me.federicomaggi.suggestme.model.Category;
+import me.federicomaggi.suggestme.model.Question;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -64,6 +72,21 @@ public class ChatFragment extends Fragment {
         TextView mTextView = (TextView) rootView.findViewById(R.id.test_textview);
         mTextView.setText(this.category);
 
+        // Download categories and subcategories
+        try {
+            ArrayList<Category> categorylist = Category.getCategories();
+
+
+            // TEST
+            Question quest = new Question("Lorem Ipsum",1,1,false);
+            quest.commitQuestionToServer();
+            // TEST
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(rootView.getContext(),"ERROR",Toast.LENGTH_LONG).show();
+        }
+
         return rootView;
     }
 
@@ -101,7 +124,6 @@ public class ChatFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
 

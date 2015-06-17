@@ -5,12 +5,19 @@ package me.federicomaggi.suggestme.model;
  */
 public class Suggest {
 
-    private int id;
+    private int id = -1;
     private String text;
 
-    public Suggest(int id, String text){
-        this.id = id;
+    /**
+     *
+     * @param text the text of the question
+     */
+    private Suggest( int id, String text ) {
         this.text = text;
+        this.id = id;
     }
+
+
+
 
 }
