@@ -40,7 +40,7 @@ public class SceltaCategorie extends AppCompatActivity
         PreferencesManager.getPreferencesManagerInstance().setContext(this);
 
         // White status bar for Lollipop
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
 
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);

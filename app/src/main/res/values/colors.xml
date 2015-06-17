@@ -4,6 +4,7 @@
     <item name="palette_white" type="color">#FFFFFF</item>
     <item name="palette_primary" type="color">#1C3F72</item>
     <item name="palette_primary_dark" type="color">#03070c</item>
+    <item name="palette_primary_light" type="color">#4F68A2</item>
     <item name="palette_black" type="color">#000000</item>
 
     <color name="black_overlay">#66000000</color>

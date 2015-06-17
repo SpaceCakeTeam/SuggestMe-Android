@@ -22,6 +22,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
@@ -51,7 +54,8 @@ public class NavigationDrawerFragment extends Fragment {
     private ActionBarDrawerToggle mDrawerToggle;
 
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerListView;
+    private ListView mMainDrawerListView;
+    private ListView mSecondaryDrawerListView;
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
@@ -90,27 +94,32 @@ public class NavigationDrawerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mDrawerListView = (ListView) inflater.inflate(
-                R.layout.fragment_navigation_drawer, container, false);
+        View rootview = inflater.inflate(R.layout.fragment_navigation_drawer,container);
 
-        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mMainDrawerListView = (ListView) rootview.findViewById(R.id.HamburgerList_main);
+
+        mMainDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+
+        ArrayList<String> mainList = new ArrayList<String>();
+        mainList.add(getString(R.string.ham_lemiedomande));
+        mainList.add(getString(R.string.ham_categorie));
+        mainList.add(getString(R.string.ham_login));
+        mainList.add(getString(R.string.ham_about));
+
+        mMainDrawerListView.setAdapter(new HamburgerAdapter(
                 getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new String[]{
-                        getString(R.string.ham_lemiedomande),
-                        getString(R.string.ham_categorie),
-                        getString(R.string.ham_login),
-                        getString(R.string.ham_about)
-                }));
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        return mDrawerListView;
+                R.layout.list_selected_row,
+                mainList
+        ));
+
+        mMainDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+
+        return rootview;
     }
 
     public boolean isDrawerOpen() {
@@ -186,8 +195,8 @@ public class NavigationDrawerFragment extends Fragment {
 
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
-        if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(position, true);
+        if (mMainDrawerListView != null) {
+            mMainDrawerListView.setItemChecked(position, true);
         }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
