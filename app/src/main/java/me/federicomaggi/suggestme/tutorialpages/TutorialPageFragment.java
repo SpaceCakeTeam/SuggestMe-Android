@@ -15,7 +15,7 @@ import me.federicomaggi.suggestme.R;
 import me.federicomaggi.suggestme.SceltaCategorie;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Created by federicomaggi on 20/05/15.
  */
 public class TutorialPageFragment extends Fragment {
 

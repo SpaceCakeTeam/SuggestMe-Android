@@ -6,11 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import me.federicomaggi.suggestme.model.Question;
-import me.federicomaggi.suggestme.model.Suggest;
 import me.federicomaggi.suggestme.model.User;
 
 /**
@@ -139,7 +137,6 @@ public class CommunicationHandler {
     public JSONObject getSuggests() {
 
         JSONObject data     = new JSONObject();
-        JSONObject userdata = new JSONObject();
         JSONObject myreply  = null;
 
         try {

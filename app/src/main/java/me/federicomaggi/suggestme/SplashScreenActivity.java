@@ -7,6 +7,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 
+/**
+ * Created by federicomaggi on 20/06/15.
+ */
 public class SplashScreenActivity extends Activity {
 
     private static final int SPLASH_TIMER = 500;
@@ -17,30 +20,27 @@ public class SplashScreenActivity extends Activity {
 
         setContentView(R.layout.activity_splash_screen);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        new Handler().postDelayed(() -> {
 
-                SharedPreferences sharedPref = getSharedPreferences(
-                        getString(R.string.tutorial_shared_prefs), Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = getSharedPreferences(
+                    getString(R.string.tutorial_shared_prefs), Context.MODE_PRIVATE);
 
 
-                if( sharedPref.contains(getResources().getString(R.string.tutorial_shared_prefs))
-                        && sharedPref.getInt(getResources().getString(R.string.tutorial_shared_prefs), 0 )  == 1
-                        ) {
+            if( sharedPref.contains(getResources().getString(R.string.tutorial_shared_prefs))
+                    && sharedPref.getInt(getResources().getString(R.string.tutorial_shared_prefs), 0 )  == 1
+                    ) {
 
-                    final Intent mainIntent = new Intent(SplashScreenActivity.this, SceltaCategorie.class);
-                    SplashScreenActivity.this.startActivity(mainIntent);
+                final Intent mainIntent = new Intent(SplashScreenActivity.this, SceltaCategorie.class);
+                SplashScreenActivity.this.startActivity(mainIntent);
 
-                }else {
+            }else {
 
-                    final Intent mainIntent = new Intent(SplashScreenActivity.this, TutorialActivity.class);
-                    SplashScreenActivity.this.startActivity(mainIntent);
+                final Intent mainIntent = new Intent(SplashScreenActivity.this, TutorialActivity.class);
+                SplashScreenActivity.this.startActivity(mainIntent);
 
-                }
-
-                SplashScreenActivity.this.finish();
             }
+
+            SplashScreenActivity.this.finish();
         }, SPLASH_TIMER);
 
     }

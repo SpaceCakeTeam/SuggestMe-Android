@@ -3,8 +3,6 @@ package me.federicomaggi.suggestme.tutorialpages;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
-import me.federicomaggi.suggestme.R;
-
 /**
  * Created by federicomaggi on 08/06/15.
  */

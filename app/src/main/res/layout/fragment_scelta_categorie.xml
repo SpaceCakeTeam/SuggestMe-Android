@@ -14,8 +14,8 @@
     tools:context="me.federicomaggi.suggestme.SceltaCategorie.SceltaCategorieFragment">
 
     <ImageButton
-        android:layout_width="fill_parent"
-        android:layout_height="250dp"
+        android:layout_width="match_parent"
+        android:layout_height="260dp"
         android:id="@+id/social_imgbtn"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -26,7 +26,7 @@
         android:background="@drawable/categorie_social_button" />
 
     <ImageButton
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:id="@+id/goods_imgbn"
         android:layout_below="@+id/social_imgbtn"

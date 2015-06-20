@@ -12,12 +12,7 @@ import me.federicomaggi.suggestme.R;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link LoginFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link LoginFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Created by federicomaggi on 20/05/15.
  */
 public class LoginFragment extends Fragment {
 

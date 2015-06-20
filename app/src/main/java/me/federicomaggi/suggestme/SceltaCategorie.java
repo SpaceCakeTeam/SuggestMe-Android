@@ -1,23 +1,15 @@
 package me.federicomaggi.suggestme;
 
-import android.app.Activity;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import me.federicomaggi.suggestme.fragment.AboutFragment;
@@ -25,10 +17,13 @@ import me.federicomaggi.suggestme.fragment.ChatFragment;
 import me.federicomaggi.suggestme.fragment.LeMieDomandeFragment;
 import me.federicomaggi.suggestme.fragment.LoginFragment;
 import me.federicomaggi.suggestme.fragment.NavigationDrawerFragment;
+import me.federicomaggi.suggestme.fragment.SceltaCategorieFragment;
 import me.federicomaggi.suggestme.model.User;
 import me.federicomaggi.suggestme.util.PreferencesManager;
 
-
+/**
+ * Created by federicomaggi on 20/06/15.
+ */
 public class SceltaCategorie extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
                    LeMieDomandeFragment.OnFragmentInteractionListener,
@@ -50,8 +45,8 @@ public class SceltaCategorie extends AppCompatActivity
 
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(this.getResources().getColor(R.color.palette_white));
+            window.setStatusBarColor(this.getResources().getColor(R.color.palette_white_transparent));
+
         }
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -72,7 +67,7 @@ public class SceltaCategorie extends AppCompatActivity
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
+    public void onNavigationDrawerItemSelected( int position ) {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -106,6 +101,10 @@ public class SceltaCategorie extends AppCompatActivity
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
+
+        if( actionBar == null )
+            return;
+
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
 
@@ -118,6 +117,7 @@ public class SceltaCategorie extends AppCompatActivity
                 ActionBar.LayoutParams.WRAP_CONTENT,
                 Gravity.END | Gravity.CENTER_VERTICAL
         );
+        layoutParams.topMargin = 10;
         layoutParams.rightMargin = 10;
 
         mImageV.setLayoutParams(layoutParams);
@@ -135,103 +135,4 @@ public class SceltaCategorie extends AppCompatActivity
     public void onFragmentInteraction(Uri uri) {
 
     }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class SceltaCategorieFragment extends Fragment {
-
-        public static SceltaCategorieFragment newInstance() {
-
-            return new SceltaCategorieFragment();
-        }
-
-        public SceltaCategorieFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_scelta_categorie, container, false);
-
-            ImageButton mSocialButton = (ImageButton) rootView.findViewById(R.id.social_imgbtn);
-            ImageButton mGoodsButton  = (ImageButton) rootView.findViewById(R.id.goods_imgbn);
-
-
-            mSocialButton.setOnTouchListener(new View.OnTouchListener(){
-
-                @Override
-                public boolean onTouch(View v, MotionEvent event){
-
-                    ImageButton view;
-
-                    switch (event.getAction()) {
-
-                        case MotionEvent.ACTION_DOWN:
-                            view = (ImageButton) v;
-                            view.getBackground().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
-                            v.invalidate();
-                            return true;
-
-                        case MotionEvent.ACTION_UP:
-
-                            getFragmentManager().beginTransaction()
-                                    .replace(R.id.container, ChatFragment.newInstance(ChatFragment.SOCIAL))
-                                    .commit();
-
-                            view = (ImageButton) v;
-                            view.getBackground().clearColorFilter();
-                            view.invalidate();
-                            return true;
-
-                        default:
-                            return false;
-                    }
-                }
-            });
-
-            mGoodsButton.setOnTouchListener(new View.OnTouchListener(){
-
-                @Override
-                public boolean onTouch(View v, MotionEvent event){
-
-                    ImageButton view;
-
-                    switch (event.getAction()){
-                        case MotionEvent.ACTION_DOWN:
-                            view = (ImageButton) v;
-                            view.getBackground().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
-                            v.invalidate();
-                            return true;
-
-                        case MotionEvent.ACTION_UP:
-                            getFragmentManager().beginTransaction()
-                                    .replace(R.id.container, ChatFragment.newInstance(ChatFragment.GOODS))
-                                    .commit();
-
-                            view = (ImageButton) v;
-                            view.getBackground().clearColorFilter();
-                            view.invalidate();
-                            return true;
-
-                        default:
-                            return false;
-                    }
-                }
-
-            });
-
-
-
-
-            return rootView;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-
-        }
-    }
-
 }

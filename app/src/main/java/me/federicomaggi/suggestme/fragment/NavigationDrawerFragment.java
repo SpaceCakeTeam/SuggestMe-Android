@@ -3,7 +3,6 @@ package me.federicomaggi.suggestme.fragment;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
-//import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -27,9 +26,7 @@ import me.federicomaggi.suggestme.R;
 import me.federicomaggi.suggestme.adapter.HamburgerAdapter;
 
 /**
- * Fragment used for managing interactions for and presentation of a navigation drawer.
- * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
- * design guidelines</a> for a complete explanation of the behaviors implemented here.
+ * Created by federicomaggi on 20/05/15.
  */
 public class NavigationDrawerFragment extends Fragment {
 

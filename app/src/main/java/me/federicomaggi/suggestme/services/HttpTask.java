@@ -76,9 +76,7 @@ public class HttpTask extends AsyncTask<JSONObject,Void,JSONObject> {
     @Override
     protected void onPostExecute(JSONObject result) {
         super.onPostExecute(result);
-        //Do anything with response..
 
     }
 
 }
-
