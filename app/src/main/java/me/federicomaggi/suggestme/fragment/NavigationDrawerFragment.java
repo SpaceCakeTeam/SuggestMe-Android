@@ -1,4 +1,4 @@
-package me.federicomaggi.suggestme;
+package me.federicomaggi.suggestme.fragment;
 
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -19,11 +19,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import me.federicomaggi.suggestme.R;
+import me.federicomaggi.suggestme.adapter.HamburgerAdapter;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.

@@ -1,14 +1,11 @@
 package me.federicomaggi.suggestme.model;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import me.federicomaggi.suggestme.PreferencesManager;
-import me.federicomaggi.suggestme.R;
+import me.federicomaggi.suggestme.util.PreferencesManager;
 import me.federicomaggi.suggestme.services.CommunicationHandler;
 
 /**

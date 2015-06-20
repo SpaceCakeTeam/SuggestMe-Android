@@ -1,4 +1,4 @@
-package me.federicomaggi.suggestme;
+package me.federicomaggi.suggestme.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,8 +6,6 @@ import android.content.SharedPreferences;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-
-import me.federicomaggi.suggestme.model.User;
 
 /**
  * Created by federicomaggi on 17/06/15.

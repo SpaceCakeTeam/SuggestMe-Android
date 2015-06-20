@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import me.federicomaggi.suggestme.services.CommunicationHandler;
 
@@ -30,7 +29,7 @@ public class Category {
 
         CommunicationHandler mycomm = CommunicationHandler.getCommunicationHandler();
         JSONObject mJson = mycomm.getCategories();
-        ArrayList<Category> myList = new ArrayList<Category>();
+        ArrayList<Category> myList = new ArrayList<>();
 
         if( mJson == null ) {
             Log.e("MODEL_CATEGORY", "Null JSON");
@@ -52,4 +51,17 @@ public class Category {
 
         return myList;
     }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public ArrayList<SubCategory> getSubcategories() {
+        return this.subcategories;
+    }
+
 }

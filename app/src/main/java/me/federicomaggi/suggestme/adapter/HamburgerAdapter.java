@@ -1,4 +1,4 @@
-package me.federicomaggi.suggestme;
+package me.federicomaggi.suggestme.adapter;
 
 import android.content.Context;
 import android.util.Log;
@@ -11,14 +11,12 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import me.federicomaggi.suggestme.R;
+
 /**
  * Created by federicomaggi on 17/06/15.
  */
 public class HamburgerAdapter extends ArrayAdapter<String> {
-
-    public HamburgerAdapter(Context context, int textViewResourceId) {
-        super(context, textViewResourceId);
-    }
 
     public HamburgerAdapter(Context context, int resource, List<String> items) {
         super(context, resource, items);

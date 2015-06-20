@@ -20,7 +20,13 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import me.federicomaggi.suggestme.fragment.AboutFragment;
+import me.federicomaggi.suggestme.fragment.ChatFragment;
+import me.federicomaggi.suggestme.fragment.LeMieDomandeFragment;
+import me.federicomaggi.suggestme.fragment.LoginFragment;
+import me.federicomaggi.suggestme.fragment.NavigationDrawerFragment;
 import me.federicomaggi.suggestme.model.User;
+import me.federicomaggi.suggestme.util.PreferencesManager;
 
 
 public class SceltaCategorie extends AppCompatActivity

@@ -1,10 +1,115 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="me.federicomaggi.suggestme.ChatFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:background="@color/palette_white"
+    android:layout_height="match_parent"
+    tools:context="me.federicomaggi.suggestme.fragment.ChatFragment">
 
-<TextView
-    android:id="@+id/test_textview"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="80dp"
+            android:paddingBottom="80dp"
+            android:weightSum="1">
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/question_cloud"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginEnd="1dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="50dp"
+                android:paddingEnd="50dp"
+                android:text=""
+                android:layout_gravity="end"
+                android:background="@drawable/cloud_right" />
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/suggest_cloud"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="1dp"
+                android:layout_marginStart="1dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="50dp"
+                android:paddingRight="10dp"
+                android:paddingEnd="10dp"
+                android:text=""
+                android:background="@drawable/cloud_left"
+                android:layout_weight="1.09" />
+        </LinearLayout>
+    </ScrollView>
+
+
+    <RelativeLayout
+        android:id="@+id/upper_row_container"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
+        android:background="@color/palette_white_transparent"
+        android:padding="10dp" >
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/hashtag_img"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/ic_hashtag"/>
+
+        <Spinner
+            android:layout_toRightOf="@id/hashtag_img"
+            android:layout_toEndOf="@id/hashtag_img"
+            android:layout_width="240dp"
+            android:layout_height="50dp"
+            android:id="@+id/subcategoy_spinner"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignBottom="@+id/hashtag_img"
+            style="@style/spinner_style" />
+
+        <ImageButton
+            android:id="@+id/anon_img"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_toRightOf="@id/subcategoy_spinner"
+            android:layout_toEndOf="@id/subcategoy_spinner"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/ic_anonymous"
+            android:contentDescription="@string/anonymous_label_button" />
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/input_question"
+        android:padding="10dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/palette_white"
+        android:hint="@string/edittext_hint"
+        android:inputType="textAutoComplete|textAutoCorrect|textMultiLine"
+        android:maxLines="6"
+        android:imeActionLabel="@string/invia"
+        android:drawableEnd="@drawable/ic_send_arrow"
+        android:drawableRight="@drawable/ic_send_arrow" />
 
 </FrameLayout>

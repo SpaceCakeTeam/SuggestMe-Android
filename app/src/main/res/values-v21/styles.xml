@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+        <style name="spinner_style">
+                <item name="android:paddingLeft">8dp</item>
+                <item name="android:paddingTop">5dp</item>
+                <item name="android:paddingBottom">5dp</item>
+                <item name="android:popupBackground">#DFFFFFFF</item>
+                <item name="android:strokeColor">@color/palette_black</item>
+        </style>
+</resources>

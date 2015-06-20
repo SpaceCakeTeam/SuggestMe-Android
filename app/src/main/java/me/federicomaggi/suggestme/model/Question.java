@@ -29,6 +29,10 @@ public class Question {
         this.anonflag      = anon;
     }
 
+    /**
+     * Send question to server.
+     * When a reply is received Question data are updated and stored in SQLite DB
+     */
     public void commitQuestionToServer() throws JSONException {
 
         CommunicationHandler comm = CommunicationHandler.getCommunicationHandler();
@@ -95,19 +99,44 @@ public class Question {
     }
 
 
+    public String toJSONString() {
+
+        JSONObject question = new JSONObject();
+
+        try {
+            question.put("text",this.text);
+            question.put("category",this.categoryid);
+            question.put("subcategory",this.subcategoryid);
+            question.put("anon",this.getAnonflag());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return question.toString();
+
+    }
+
+    /**
+     * Store question in SQLite Database.
+     * This is fired when the server replies with QuestionID and Timestamp
+     */
     private void storeQuestionInDatabase() {
 
         // TODO -- store the question data in local SQLite DB
         Log.d("QUESTION_COMMIT_DB","Hell yeah here we are");
     }
 
-
+    /**
+     * Retrieve an ArrayList containing QuestionID
+     * stored in SQLite database
+     *
+     * @return ArrayList<Integer>
+     */
     public static ArrayList<Integer> retrieveMyQuestions() {
 
-        ArrayList<Integer> mylist = new ArrayList<Integer>();
-
         // TODO -- retrieve question data from local SQLite DB
-
+        ArrayList<Integer> mylist = new ArrayList<Integer>();
 
         mylist.add(1);
         mylist.add(2);

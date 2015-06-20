@@ -1,7 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/palette_black"
+    android:background="@drawable/tutorial_page_5"
     tools:context="me.federicomaggi.suggestme.tutorialviews.Tutorial_Page_5">
 
 

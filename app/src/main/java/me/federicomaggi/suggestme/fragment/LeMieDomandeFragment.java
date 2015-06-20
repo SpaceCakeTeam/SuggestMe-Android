@@ -1,4 +1,4 @@
-package me.federicomaggi.suggestme;
+package me.federicomaggi.suggestme.fragment;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -7,32 +7,22 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 
-import java.util.ArrayList;
+import me.federicomaggi.suggestme.R;
+import me.federicomaggi.suggestme.model.Suggest;
 
-import me.federicomaggi.suggestme.model.Category;
-import me.federicomaggi.suggestme.model.Question;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ChatFragment.OnFragmentInteractionListener} interface
+ * {@link LeMieDomandeFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ChatFragment#newInstance} factory method to
+ * Use the {@link LeMieDomandeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ChatFragment extends Fragment {
-
-    public static final String SOCIAL = "social";
-    public static final String GOODS  = "goods";
-
-    private static final String CATEGORY = "";
-
-    private String category;
+public class LeMieDomandeFragment extends Fragment{
 
     private OnFragmentInteractionListener mListener;
 
@@ -40,54 +30,33 @@ public class ChatFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param category Parameter 1.
-     * @return A new instance of fragment ChatFragment.
+     * @return A new instance of fragment LeMieDomandeFragment.
      */
-    public static ChatFragment newInstance(String category) {
-        ChatFragment fragment = new ChatFragment();
-        Bundle args = new Bundle();
-        args.putString(CATEGORY, category);
-        fragment.setArguments(args);
-        return fragment;
+    public static LeMieDomandeFragment newInstance() {
+        return new LeMieDomandeFragment();
     }
 
-    public ChatFragment() {
+    public LeMieDomandeFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            this.category = getArguments().getString(CATEGORY);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
-
-        TextView mTextView = (TextView) rootView.findViewById(R.id.test_textview);
-        mTextView.setText(this.category);
-
-        // Download categories and subcategories
         try {
-            ArrayList<Category> categorylist = Category.getCategories();
-
-
-            // TEST
-            Question quest = new Question("Lorem Ipsum",1,1,false);
-            quest.commitQuestionToServer();
-            // TEST
+            Suggest.getSuggestsFromServer();
 
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(rootView.getContext(),"ERROR",Toast.LENGTH_LONG).show();
         }
 
-        return rootView;
+        return inflater.inflate(R.layout.fragment_le_mie_domande, container, false);
     }
 
     public void onButtonPressed(Uri uri) {
@@ -124,6 +93,7 @@ public class ChatFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
 

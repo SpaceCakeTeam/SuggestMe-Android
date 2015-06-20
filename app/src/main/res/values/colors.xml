@@ -8,5 +8,6 @@
     <item name="palette_black" type="color">#000000</item>
 
     <color name="black_overlay">#66000000</color>
+    <color name="palette_white_transparent">#80FFFFFF</color>
 
 </resources>

@@ -19,10 +19,10 @@ public class SubCategory {
         this.name = name;
     }
 
-    public static ArrayList<SubCategory> getTheArrayListFromJsonArray(JSONArray theinput ) throws JSONException {
+    public static ArrayList<SubCategory> getTheArrayListFromJsonArray( JSONArray theinput ) throws JSONException {
 
-        JSONObject temp = null;
-        ArrayList<SubCategory> mySubList = new ArrayList<SubCategory>();
+        JSONObject temp;
+        ArrayList<SubCategory> mySubList = new ArrayList<>();
 
         for( int i = 0; i < theinput.length(); i++ ) {
 
@@ -33,6 +33,13 @@ public class SubCategory {
         return mySubList;
     }
 
+    public int getId() {
+        return this.id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
 
 
 
