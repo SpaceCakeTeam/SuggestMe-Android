@@ -17,17 +17,19 @@ public class SplashScreenActivity extends Activity {
 
         setContentView(R.layout.activity_splash_screen);
 
-        new Handler().postDelayed(() -> {
-
-            SharedPreferences sharedPref = getSharedPreferences(getString(R.string.tutorial_shared_prefs), Context.MODE_PRIVATE);
-            if(sharedPref.contains(getResources().getString(R.string.tutorial_shared_prefs)) && sharedPref.getInt(getResources().getString(R.string.tutorial_shared_prefs), 0 ) == 1) {
-                final Intent mainIntent = new Intent(SplashScreenActivity.this, SceltaCategorie.class);
-                SplashScreenActivity.this.startActivity(mainIntent);
-            } else {
-                final Intent mainIntent = new Intent(SplashScreenActivity.this, TutorialActivity.class);
-                SplashScreenActivity.this.startActivity(mainIntent);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferences sharedPref = getSharedPreferences(getString(R.string.tutorial_shared_prefs), Context.MODE_PRIVATE);
+                if(sharedPref.contains(getResources().getString(R.string.tutorial_shared_prefs)) && sharedPref.getInt(getResources().getString(R.string.tutorial_shared_prefs), 0 ) == 1) {
+                    final Intent mainIntent = new Intent(SplashScreenActivity.this, SceltaCategorie.class);
+                    SplashScreenActivity.this.startActivity(mainIntent);
+                } else {
+                    final Intent mainIntent = new Intent(SplashScreenActivity.this, TutorialActivity.class);
+                    SplashScreenActivity.this.startActivity(mainIntent);
+                }
+                SplashScreenActivity.this.finish();
             }
-            SplashScreenActivity.this.finish();
         }, SPLASH_TIMER);
     }
 

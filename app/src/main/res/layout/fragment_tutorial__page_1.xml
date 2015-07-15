@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/tutorial_page_1"
-    tools:context="me.federicomaggi.suggestme.tutorialviews.Tutorial_Page_1">
+    tools:context="it.suggestme.tutorialviews.Tutorial_Page_1">
 
     <ImageView
         android:id="@+id/img_dots_page_1"
