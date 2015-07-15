@@ -1,4 +1,4 @@
-package it.suggestme.services;
+package it.suggestme.controller;
 
 import android.util.Log;
 
@@ -13,24 +13,11 @@ import it.suggestme.model.User;
 
 public class CommunicationHandler {
 
-    public static final String BASEURL = "http://server.federicomaggi.me/";
+    private static CommunicationHandler mInstance = null;
 
-    private static final String REGISTRATION_URI = "registration";
-    private static final String GET_CATEGORIES_URI = "getcategories";
-    private static final String ASK_SUGESTION_URI = "asksuggestion";
-    private static final String GET_SUGGESTS_URI = "getsuggests";
-
-    private static final String SECRET = "fd11016af3184be88299b007f9676231b69dd6fc";
-    private static final String SECRET_LABEL = "secret";
-
-    private static CommunicationHandler handlerinstance = null;
-
-    private CommunicationHandler(){}
-
-    public static CommunicationHandler getCommunicationHandler(){
-        if(handlerinstance == null)
-            handlerinstance = new CommunicationHandler();
-        return handlerinstance;
+    private CommunicationHandler() {
+        if (mInstance == null)
+        mInstance = new CommunicationHandler();
     }
 
     public JSONObject registration(){
@@ -39,7 +26,7 @@ public class CommunicationHandler {
         JSONObject myreply = null;
         try {
             data.put("userid", User.getUserInstance().getId());
-            data.put("anonflag", User.getUserInstance().getAnonflag());
+            data.put("anonflag", User.getUserInstance().getAnon());
             if(User.getUserInstance().getId() != -1) {
                 userdata.put("name",User.getUserInstance().getName());
                 userdata.put("surname",User.getUserInstance().getSurname());

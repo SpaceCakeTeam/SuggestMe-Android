@@ -1,4 +1,4 @@
-package it.suggestme.services;
+package it.suggestme.controller;
 
 import android.os.AsyncTask;
 import android.util.Log;
