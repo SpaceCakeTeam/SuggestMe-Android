@@ -12,6 +12,7 @@ import me.federicomaggi.suggestme.services.CommunicationHandler;
 
 /**
  * Created by federicomaggi on 20/05/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
 public class Category {
 
@@ -64,4 +65,25 @@ public class Category {
         return this.subcategories;
     }
 
+    public static String getCategoryFromID( int catid, ArrayList<Category> catList ) {
+
+        for( Category aCat : catList ) {
+            if ( aCat.getId() == catid ) {
+
+                return aCat.getName();
+            }
+        }
+
+        return "";
+    }
+
+    public static ArrayList<SubCategory> getSubCategoryFromID( int catid, ArrayList<Category> catList ) {
+
+        for( Category aCat : catList ) {
+            if( aCat.getId() == catid ) {
+                return aCat.getSubcategories();
+            }
+        }
+        return null;
+    }
 }

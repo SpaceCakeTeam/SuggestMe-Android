@@ -16,6 +16,7 @@ import me.federicomaggi.suggestme.SceltaCategorie;
 
 /**
  * Created by federicomaggi on 20/05/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
 public class TutorialPageFragment extends Fragment {
 

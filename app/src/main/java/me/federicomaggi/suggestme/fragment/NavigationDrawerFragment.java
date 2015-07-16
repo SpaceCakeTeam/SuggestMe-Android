@@ -24,9 +24,11 @@ import java.util.ArrayList;
 
 import me.federicomaggi.suggestme.R;
 import me.federicomaggi.suggestme.adapter.HamburgerAdapter;
+import me.federicomaggi.suggestme.model.HamburgerItem;
 
 /**
  * Created by federicomaggi on 20/05/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
 public class NavigationDrawerFragment extends Fragment {
 
@@ -53,7 +55,6 @@ public class NavigationDrawerFragment extends Fragment {
 
     private DrawerLayout mDrawerLayout;
     private ListView mMainDrawerListView;
-    private ListView mSecondaryDrawerListView;
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
@@ -103,11 +104,11 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
-        ArrayList<String> mainList = new ArrayList<String>();
-        mainList.add(getString(R.string.ham_lemiedomande));
-        mainList.add(getString(R.string.ham_categorie));
-        mainList.add(getString(R.string.ham_login));
-        mainList.add(getString(R.string.ham_about));
+        ArrayList<HamburgerItem> mainList = new ArrayList<HamburgerItem>();
+        mainList.add(new HamburgerItem(getString(R.string.ham_lemiedomande),getResources().getDrawable(R.drawable.ic_ham_domande)));
+        mainList.add(new HamburgerItem(getString(R.string.ham_categorie),getResources().getDrawable(R.drawable.ic_ham_question)));
+        mainList.add(new HamburgerItem(getString(R.string.ham_login), getResources().getDrawable(R.drawable.ic_ham_login)));
+        mainList.add(new HamburgerItem(getString(R.string.ham_about),getResources().getDrawable(R.drawable.ic_ham_about)));
 
         mMainDrawerListView.setAdapter(new HamburgerAdapter(
                 getActionBar().getThemedContext(),

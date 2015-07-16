@@ -8,6 +8,7 @@ import me.federicomaggi.suggestme.tutorialpages.TutorialPageFragment;
 
 /**
  * Created by federicomaggi on 20/06/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
 public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 

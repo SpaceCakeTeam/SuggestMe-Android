@@ -5,6 +5,7 @@ import android.view.View;
 
 /**
  * Created by federicomaggi on 08/06/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
 public class DepthPageTransformer implements ViewPager.PageTransformer {
     private static final float MIN_SCALE = 0.75f;

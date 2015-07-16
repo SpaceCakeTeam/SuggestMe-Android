@@ -9,6 +9,7 @@ import org.json.JSONTokener;
 
 /**
  * Created by federicomaggi on 17/06/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
 public class PreferencesManager {
 
@@ -27,12 +28,12 @@ public class PreferencesManager {
         return singleton;
     }
 
-    public void setContext( Context appContext ) {
-        this.appContext = appContext;
+    public void setContext( Context newContext ) {
+        appContext = newContext;
     }
 
-    public boolean checkForKey( String sharedfile ,String key ) {
-        SharedPreferences sp = appContext.getSharedPreferences(sharedfile, Context.MODE_PRIVATE);
+    public boolean checkForKey( String sharedFile ,String key ) {
+        SharedPreferences sp = appContext.getSharedPreferences(sharedFile, Context.MODE_PRIVATE);
 
         return sp.contains(key);
     }

@@ -15,6 +15,7 @@ import me.federicomaggi.suggestme.tutorialpages.ZoomOutPageTransformer;
 
 /**
  * Created by federicomaggi on 20/06/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
 public class TutorialActivity extends FragmentActivity {
 

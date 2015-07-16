@@ -20,6 +20,7 @@ import java.net.URL;
 
 /**
  * Created by federicomaggi on 08/06/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
 public class HttpTask extends AsyncTask<JSONObject,Void,JSONObject> {
 
@@ -38,9 +39,8 @@ public class HttpTask extends AsyncTask<JSONObject,Void,JSONObject> {
 
     @Override
     protected JSONObject doInBackground(JSONObject... uri) {
-        HttpClient httpclient = new DefaultHttpClient();
 
-        String responseString = "";
+        String responseString;
         JSONObject response = null;
         try {
             Log.d("HTTPTASK", "REQUEST URI: ".concat(this.REQUEST_URI));
@@ -62,12 +62,8 @@ public class HttpTask extends AsyncTask<JSONObject,Void,JSONObject> {
             response = (JSONObject) new JSONTokener(responseString).nextValue();
             Log.d("HTTPTASK","RESPONSE: " + response.toString());
 
-        }catch (IOException e) {
+        }catch (IOException | JSONException e) {
             e.printStackTrace();
-
-        }catch (JSONException e) {
-            e.printStackTrace();
-
         }
 
         return response;

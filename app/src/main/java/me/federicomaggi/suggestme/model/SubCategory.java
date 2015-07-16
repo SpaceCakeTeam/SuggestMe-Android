@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 /**
  * Created by federicomaggi on 20/05/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
 public class SubCategory {
 
@@ -41,6 +42,19 @@ public class SubCategory {
         return this.name;
     }
 
+
+    public static String getSubCategoryNameFromID( int subcatid, ArrayList<SubCategory> subcatList ) {
+
+        if( subcatList == null )
+            throw new NullPointerException();
+
+        for( SubCategory aSubCat : subcatList ) {
+            if( aSubCat.getId() == subcatid ) {
+                return aSubCat.getName();
+            }
+        }
+        return "";
+    }
 
 
 }

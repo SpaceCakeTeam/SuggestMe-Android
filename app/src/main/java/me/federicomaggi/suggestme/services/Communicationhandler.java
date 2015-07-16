@@ -13,6 +13,7 @@ import me.federicomaggi.suggestme.model.User;
 
 /**
  * Created by federicomaggi on 08/06/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
 public class CommunicationHandler {
 
@@ -133,7 +134,12 @@ public class CommunicationHandler {
         return myreply;
     }
 
-
+    /**
+     * Service Get Suggests
+     * Used to retrieve suggests for Question locally stored
+     *
+     * @return JSONObject containing the reply from server
+     */
     public JSONObject getSuggests() {
 
         JSONObject data     = new JSONObject();
@@ -141,7 +147,7 @@ public class CommunicationHandler {
 
         try {
             // Retrieve from DB an array of QUestion
-            JSONArray questionid = new JSONArray(Question.retrieveMyQuestions()) ;
+            JSONArray questionid = new JSONArray(Question.retrieveMyQuestionsID()) ;
 
             data.put("userid", User.getUserInstance().getId());
             data.put("userdata",questionid);
@@ -171,15 +177,14 @@ public class CommunicationHandler {
             JSONObject reply = new HttpTask(requestUri,requestData).execute(requestData).get();
 
             if( reply == null || !reply.getString("status").toLowerCase().equals("ok") ) {
-                Log.e("COMM_HANDLE", "ERROR. " + reply.getString("status") + " REQUEST. Err.no: " + reply.getInt("errno"));
+                if (reply != null)
+                    Log.e("COMM_HANDLE", "ERROR. " + reply.getString("status")
+                            + " REQUEST. Err.no: " + reply.getInt("errno"));
+
                 return null;
             }
             return reply;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (InterruptedException | ExecutionException | JSONException e) {
             e.printStackTrace();
         }
         return null;
@@ -194,7 +199,7 @@ public class CommunicationHandler {
      */
     private JSONObject addSecret(JSONObject withoutSecret){
 
-        JSONObject withSecret = null;
+        JSONObject withSecret;
 
         try{
             if( withoutSecret.has(SECRET_LABEL) )

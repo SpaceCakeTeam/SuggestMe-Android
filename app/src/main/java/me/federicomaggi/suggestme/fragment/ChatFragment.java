@@ -1,5 +1,6 @@
 package me.federicomaggi.suggestme.fragment;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
@@ -14,6 +15,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,16 +31,21 @@ import me.federicomaggi.suggestme.R;
 import me.federicomaggi.suggestme.model.Category;
 import me.federicomaggi.suggestme.model.Question;
 import me.federicomaggi.suggestme.model.SubCategory;
+import me.federicomaggi.suggestme.model.Suggest;
 
 /**
  * Created by federicomaggi on 20/05/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
 public class ChatFragment extends Fragment {
 
     public static final String SOCIAL = "social";
     public static final String GOODS  = "goods";
 
-    private static final String CATEGORY = "category_bundle_arg";
+    private static final String CATEGORY   = "category_bundle_arg";
+    private static final String QUESTIONID = "questionid_bundle_arg";
+    private static final String SUGGESTID  = "suggestid_bundle_arg";
+    private static final String SHOWKEY    = "showkey_bundle_arg";
 
     private String category;
 
@@ -50,21 +58,52 @@ public class ChatFragment extends Fragment {
     private ImageButton mAnonButton;
     private TextView    mQuestionText;
     private TextView    mSuggestText;
+    private RelativeLayout mLayout;
 
     private String  questionBody;
     private int     categoryId;
     private int     subcategoryId;
     private Boolean anonflag;
 
+    private Boolean  showKey;
+    private int      questionID;
+    private int      suggestID;
+    private Question mQuestion;
+    private Suggest  mSuggest;
+
     /**
      * Factory method to create a new ChatFragment
+     *
      * @param category The category to set proper background and show subcategories.
+     *
      * @return A new instance of fragment ChatFragment.
      */
     public static ChatFragment newInstance(String category) {
         ChatFragment fragment = new ChatFragment();
         Bundle args = new Bundle();
         args.putString(CATEGORY, category);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    /**
+     * Factory method to create a new ChatFragment with a Question ID
+     *
+     * @param category Category name to set proper background
+     * @param questionID Question ID to be recovered from DB
+     * @param suggestID Suggest ID to be recovered from DB
+     * @param show whether to show or not show the keyboard input text field
+     *
+     * @return A ne instance of fragment ChatFragment
+     */
+    public static ChatFragment newInstance(String category, int questionID, int suggestID, Boolean show) {
+
+        ChatFragment fragment = new ChatFragment();
+        Bundle args = new Bundle();
+        args.putString(CATEGORY, category);
+        args.putInt(QUESTIONID, questionID);
+        args.putInt(SUGGESTID, suggestID);
+        args.putBoolean(SHOWKEY, show);
         fragment.setArguments(args);
         return fragment;
     }
@@ -78,8 +117,11 @@ public class ChatFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            this.category = getArguments().getString(CATEGORY);
+            this.category   = getArguments().getString(CATEGORY);
 
+            this.showKey    = getArguments().getBoolean(SHOWKEY, true);
+            this.questionID = getArguments().getInt(QUESTIONID, -1);
+            this.suggestID  = getArguments().getInt(SUGGESTID,-1);
         }
     }
 
@@ -89,65 +131,80 @@ public class ChatFragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
 
-        // Retrieve elements
-        mSpinner        = (Spinner)     rootView.findViewById(R.id.subcategoy_spinner);
         mQuestionEditor = (EditText)    rootView.findViewById(R.id.input_question);
-        mAnonButton     = (ImageButton) rootView.findViewById(R.id.anon_img);
         mQuestionText   = (TextView)    rootView.findViewById(R.id.question_cloud);
-
-        // Initialise Anonymous flag
-        setAnonFlag(true);
+        mSuggestText    = (TextView)    rootView.findViewById(R.id.suggest_cloud);
+        mLayout         = (RelativeLayout) rootView.findViewById(R.id.upper_row_container);
+        mSpinner        = (Spinner)     rootView.findViewById(R.id.subcategoy_spinner);
+        mAnonButton     = (ImageButton) rootView.findViewById(R.id.anon_img);
 
         // Set Background image
-        if( this.category.equals(SOCIAL)  )
+        if( this.category.toLowerCase().equals(SOCIAL)  )
             rootView.setBackground(getResources().getDrawable(R.drawable.form_social_background));
-        else
+        else if( this.category.toLowerCase().equals(GOODS) )
             rootView.setBackground(getResources().getDrawable(R.drawable.form_goods_background));
 
-        // Download categories and subcategories
-        try {
-            mCategoryList = Category.getCategories();
+        // Retrieve elements
+        if (showKey) {
 
-            if( mCategoryList != null )
-                setSpinnerValues(mCategoryList);
-            else
-                throw new IOException();
+            // Initialise Anonymous flag
+            setAnonFlag(true);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(rootView.getContext(),getString(R.string.genericerror),Toast.LENGTH_LONG).show();
+            // Download categories and subcategories
+            try {
+                mCategoryList = Category.getCategories();
 
-        } catch (IOException e ) {
-            Toast.makeText(rootView.getContext(),getString(R.string.nocategories),Toast.LENGTH_LONG).show();
-        }
+                if( mCategoryList != null && showKey )
+                    setSpinnerValues(mCategoryList);
 
-
-        // Listener for AnonButton
-        mAnonButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setAnonFlag(!anonflag);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(rootView.getContext(),getString(R.string.genericerror),Toast.LENGTH_LONG).show();
             }
-        });
 
-
-        // Listener for SendButton
-        mQuestionEditor.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                final int DRAWABLE_RIGHT = 2;
-
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (event.getRawX() >= (mQuestionEditor.getRight() - mQuestionEditor.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-
-                        sendQuestion();
-                        return true;
-                    }
+            // Listener for AnonButton
+            mAnonButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    setAnonFlag(!anonflag);
                 }
-                return false;
-            }
-        });
+            });
 
+            // Listener for SendButton
+            mQuestionEditor.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    final int DRAWABLE_RIGHT = 2;
+
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        if (event.getRawX() >= (mQuestionEditor.getRight() - mQuestionEditor.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+
+                            sendQuestion();
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            });
+
+        }else {
+
+            Toast.makeText(getActivity(),"Question ID "+((Integer)this.questionID).toString(),Toast.LENGTH_SHORT).show();
+
+            // LOAD QUESTION AND SUGGEST FROM DB
+            Question theQuest = Question.getQuestionDataFromID(this.questionID);
+            mQuestionText.setText("Lorem Ipsum");
+            mQuestionText.setVisibility(View.VISIBLE);
+
+            if( suggestID != -1 ) {
+             //   Suggest theSuggest = Suggest.getSuggestDataFromID();
+                mSuggestText.setText("Dolor sit amet");
+                mSuggestText.setVisibility(View.VISIBLE);
+            }
+
+            mQuestionEditor.setVisibility(View.GONE);
+            mLayout.setVisibility(View.GONE);
+        }
         return rootView;
     }
 
@@ -203,7 +260,7 @@ public class ChatFragment extends Fragment {
         Log.d("ChatFragment", "Question data: " + theQuestion.toJSONString());
 
         try {
-
+            theQuestion.setContext(getActivity().getApplicationContext());
             theQuestion.commitQuestionToServer();
             mQuestionText.setVisibility(View.VISIBLE);
             mQuestionText.setText(this.questionBody);

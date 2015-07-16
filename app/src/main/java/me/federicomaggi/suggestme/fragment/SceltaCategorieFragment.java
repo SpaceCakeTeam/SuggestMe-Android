@@ -14,6 +14,7 @@ import me.federicomaggi.suggestme.R;
 
 /**
  * Created by federicomaggi on 20/06/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
 public class SceltaCategorieFragment extends Fragment {
 
@@ -34,58 +35,67 @@ public class SceltaCategorieFragment extends Fragment {
         ImageButton mGoodsButton  = (ImageButton) rootView.findViewById(R.id.goods_imgbn);
 
 
-        mSocialButton.setOnTouchListener((v, event) -> {
+        mSocialButton.setOnTouchListener(new View.OnTouchListener(){
 
-            ImageButton view;
+            @Override
+            public boolean onTouch(View v, MotionEvent event){
 
-            switch (event.getAction()) {
+                ImageButton view;
 
-                case MotionEvent.ACTION_DOWN:
-                    view = (ImageButton) v;
-                    view.getBackground().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
-                    v.invalidate();
-                    return true;
+                switch (event.getAction()) {
 
-                case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_DOWN:
+                        view = (ImageButton) v;
+                        view.getBackground().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        return true;
 
-                    getFragmentManager().beginTransaction()
-                            .replace(R.id.container, ChatFragment.newInstance(ChatFragment.SOCIAL))
-                            .commit();
+                    case MotionEvent.ACTION_UP:
 
-                    view = (ImageButton) v;
-                    view.getBackground().clearColorFilter();
-                    view.invalidate();
-                    return true;
+                        getFragmentManager().beginTransaction()
+                                .replace(R.id.container, ChatFragment.newInstance(ChatFragment.SOCIAL))
+                                .commit();
 
-                default:
-                    return false;
+                        view = (ImageButton) v;
+                        view.getBackground().clearColorFilter();
+                        view.invalidate();
+                        return true;
+
+                    default:
+                        return false;
+                }
             }
         });
 
-        mGoodsButton.setOnTouchListener((v, event) -> {
+        mGoodsButton.setOnTouchListener(new View.OnTouchListener(){
 
-            ImageButton view;
+            @Override
+            public boolean onTouch(View v, MotionEvent event){
 
-            switch (event.getAction()){
-                case MotionEvent.ACTION_DOWN:
-                    view = (ImageButton) v;
-                    view.getBackground().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
-                    v.invalidate();
-                    return true;
+                ImageButton view;
 
-                case MotionEvent.ACTION_UP:
-                    getFragmentManager().beginTransaction()
-                            .replace(R.id.container, ChatFragment.newInstance(ChatFragment.GOODS))
-                            .commit();
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        view = (ImageButton) v;
+                        view.getBackground().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        return true;
 
-                    view = (ImageButton) v;
-                    view.getBackground().clearColorFilter();
-                    view.invalidate();
-                    return true;
+                    case MotionEvent.ACTION_UP:
+                        getFragmentManager().beginTransaction()
+                                .replace(R.id.container, ChatFragment.newInstance(ChatFragment.GOODS))
+                                .commit();
 
-                default:
-                    return false;
+                        view = (ImageButton) v;
+                        view.getBackground().clearColorFilter();
+                        view.invalidate();
+                        return true;
+
+                    default:
+                        return false;
+                }
             }
+
         });
 
         return rootView;

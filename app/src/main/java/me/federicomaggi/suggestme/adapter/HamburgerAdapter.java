@@ -12,13 +12,15 @@ import android.widget.TextView;
 import java.util.List;
 
 import me.federicomaggi.suggestme.R;
+import me.federicomaggi.suggestme.model.HamburgerItem;
 
 /**
  * Created by federicomaggi on 17/06/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
-public class HamburgerAdapter extends ArrayAdapter<String> {
+public class HamburgerAdapter extends ArrayAdapter<HamburgerItem> {
 
-    public HamburgerAdapter(Context context, int resource, List<String> items) {
+    public HamburgerAdapter(Context context, int resource, List<HamburgerItem> items) {
         super(context, resource, items);
     }
 
@@ -34,19 +36,17 @@ public class HamburgerAdapter extends ArrayAdapter<String> {
             theView = li.inflate(R.layout.list_selected_row, null);
         }
 
-        String pos = getItem(position);
+        HamburgerItem item= getItem(position);
 
-        if( pos != null ) {
+        if( item != null ) {
 
             ImageView imview = (ImageView) theView.findViewById(R.id.ham_element_icon);
+            imview.setImageDrawable(item.getIcon());
+
             TextView hamtext = (TextView)  theView.findViewById(R.id.ham_element_text);
-            hamtext.setText(pos);
+            hamtext.setText(item.getTitle());
         }
 
         return theView;
     }
-
-
-
-
 }

@@ -13,6 +13,7 @@ import me.federicomaggi.suggestme.R;
 
 /**
  * Created by federicomaggi on 20/05/15.
+ * © 2015 Federico Maggi. All rights reserved
  */
 public class LoginFragment extends Fragment {
 
