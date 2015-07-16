@@ -2,13 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/tutorial_page_2"
-    tools:context="me.federicomaggi.suggestme.tutorialviews.Tutorial_Page_2">
-
-
-
-
-
-
+    tools:context="it.suggestme.tutorialviews.Tutorial_Page_2">
 
     <ImageView
         android:id="@+id/img_dots_page_2"

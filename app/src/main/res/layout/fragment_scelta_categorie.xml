@@ -11,7 +11,7 @@
     android:fillViewport="true"
     android:gravity="fill_vertical"
     android:background="@color/palette_white"
-    tools:context="me.federicomaggi.suggestme.SceltaCategorie.SceltaCategorieFragment">
+    tools:context="it.suggestme.SceltaCategorie.SceltaCategorieFragment">
 
     <ImageButton
         android:layout_width="match_parent"
