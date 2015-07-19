@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/about_background"
-    tools:context="it.suggestme.fragment.AboutFragment">
+    tools:context="it.suggestme.ui.fragment.AboutFragment">
 
     <ImageView
         android:id="@+id/about_logo_image"

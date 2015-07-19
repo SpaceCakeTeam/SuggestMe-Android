@@ -1,5 +1,8 @@
 package it.suggestme.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Suggest {
 
     private int id;
@@ -16,5 +19,16 @@ public class Suggest {
 
     public String getText() {
         return text;
+    }
+
+    public JSONObject parse() {
+        try {
+            return new JSONObject()
+                    .put("id",id)
+                    .put("text",text);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

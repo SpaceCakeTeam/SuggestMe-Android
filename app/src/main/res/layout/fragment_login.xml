@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/login_background"
-    tools:context="it.suggestme.fragment.LoginFragment">
+    tools:context="it.suggestme.ui.fragment.LoginFragment">
 
 
     <ImageView

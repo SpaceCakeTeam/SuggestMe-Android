@@ -1,5 +1,8 @@
 package it.suggestme.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class UserData {
 
     private String name;
@@ -36,5 +39,19 @@ public class UserData {
 
     public String getEmail() {
         return email;
+    }
+
+    public JSONObject parse() {
+        try {
+            return new JSONObject()
+                    .put("name",name)
+                    .put("surname",surname)
+                    .put("birthdate",birthdate)
+                    .put("gender",gender)
+                    .put("email",email);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

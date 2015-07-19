@@ -1,142 +1,225 @@
 package it.suggestme.controller;
 
-import android.util.Log;
+import android.os.AsyncTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
-import java.util.concurrent.ExecutionException;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 
+import it.suggestme.R;
+import it.suggestme.model.Category;
 import it.suggestme.model.Question;
+import it.suggestme.model.QuestionData;
+import it.suggestme.model.SubCategory;
+import it.suggestme.model.Suggest;
 import it.suggestme.model.User;
 
-/**
- * Created by federicomaggi on 08/06/15.
- * © 2015 Federico Maggi. All rights reserved
- */
 public class CommunicationHandler {
 
-    // Avevi tolto queste final ma il resto del codice le usa ancora.. Le ho reinserite
-    public static final String BASEURL = "http://server.federicomaggi.me/";
+    private Helpers helpers = Helpers.shared();
 
-    private static final String REGISTRATION_URI    = "registration";
-    private static final String GET_CATEGORIES_URI  = "getcategories";
-    private static final String ASK_SUGESTION_URI   = "asksuggestion";
-    private static final String GET_SUGGESTS_URI    = "getsuggests";
+    public CommunicationHandler() {}
 
-    private static final String SECRET       = "fd11016af3184be88299b007f9676231b69dd6fc";
-    private static final String SECRET_LABEL = "secret";
-    // *********************************************************************************
+    class ServiceRequest extends AsyncTask<Void,Void,JSONObject> {
 
-    private static CommunicationHandler mInstance = null;
+        private String requestUri;
+        private JSONObject requestData;
+        private ServiceCallback serviceCallback;
+        private JSONObject requestDataWithIdAndSecret;
 
-    private CommunicationHandler() {
-        if (mInstance == null)
-        mInstance = new CommunicationHandler();
-    }
+        public ServiceRequest(String requestUri, JSONObject requestData, ServiceCallback serviceCallback) {
+            this.requestUri = requestUri;
+            this.requestData = requestData;
+            this.serviceCallback = serviceCallback;
+        }
 
-    public JSONObject registration(){
-        JSONObject data = new JSONObject();
-        JSONObject userdata = new JSONObject();
-        JSONObject myreply = null;
-        try {
-            data.put("userid", User.getUserInstance().getId());
-            data.put("anonflag", User.getUserInstance().getAnon());
-            if(User.getUserInstance().getId() != -1) {
-                userdata.put("name",User.getUserInstance().getName());
-                userdata.put("surname",User.getUserInstance().getSurname());
-                userdata.put("birth_date",User.getUserInstance().getBirthdate());
-                userdata.put("gender",User.getUserInstance().getGender());
-                userdata.put("email",User.getUserInstance().getEmail());
-                data.put("userdata",userdata);
+        @Override
+        protected void onPreExecute(){
+            try {
+                User user = helpers.getUser();
+                requestDataWithIdAndSecret = new JSONObject();
+                if (requestUri.equalsIgnoreCase(Helpers.getString(R.string.registration_uri))) {
+                    try {
+                        requestDataWithIdAndSecret
+                                .put("userid", user.getId())
+                                .put("anonflag", user.getAnon())
+                                .put("userdata", user.getUserData())
+                                .put("userdata", requestData)
+                                .put("secret", Helpers.getString(R.string.secret));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    requestDataWithIdAndSecret
+                            .put("userid", user.getId())
+                            .put("userdata", requestData)
+                            .put("secret", Helpers.getString(R.string.secret));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            myreply = serviceRequest(REGISTRATION_URI, data );
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-        return myreply;
-    }
 
-    public JSONObject getCategories() {
-        JSONObject data = new JSONObject();
-        JSONObject myreply = null;
-        try {
-            data.put("userid", User.getUserInstance().getId());
-            data.put("userdata", "");
-            myreply = serviceRequest(GET_CATEGORIES_URI,data);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return myreply;
-    }
-
-    public JSONObject askQuestion(Question question) {
-        JSONObject data = new JSONObject();
-        JSONObject userdata = new JSONObject();
-        JSONObject myreply = null;
-
-        try {
-            data.put("userid", User.getUserInstance().getId());
-            userdata.put("categoryid", question.getCategory());
-            userdata.put("subcategoryid", question.getSubcategoryid());
-            userdata.put("text", question.getContent());
-            userdata.put("anonflag", question.getAnonflag());
-            data.put("userdata",userdata);
-            myreply = serviceRequest(ASK_SUGESTION_URI,data);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return myreply;
-    }
-
-    /**
-     * Service Get Suggests
-     * Used to retrieve suggests for Question locally stored
-     *
-     * @return JSONObject containing the reply from server
-     */
-    public JSONObject getSuggests() {
-        JSONObject data = new JSONObject();
-        JSONObject myreply = null;
-
-        try {
-            JSONArray questionid = new JSONArray(Question.retrieveMyQuestions()) ;
-            data.put("userid", User.getUserInstance().getId());
-            data.put("userdata",questionid);
-            myreply = serviceRequest(GET_SUGGESTS_URI,data);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return myreply;
-    }
-
-    private JSONObject serviceRequest(String requestUri, JSONObject requestData) {
-        requestData = addSecret(requestData);
-        try{
-            JSONObject reply = new HttpTask(requestUri,requestData).execute(requestData).get();
-            if(reply == null || !reply.getString("status").toLowerCase().equals("ok")) {
-                Log.e("COMM_HANDLE", "ERROR. " + reply.getString("status") + " REQUEST. Err.no: " + reply.getInt("errno"));
-                return null;
+        @Override
+        protected JSONObject doInBackground(Void... v) {
+            JSONObject response = new JSONObject();
+            try {
+                HttpURLConnection connection = (HttpURLConnection) new URL(Helpers.getString(R.string.base_url)+requestUri).openConnection();
+                connection.setRequestMethod("POST");
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(requestDataWithIdAndSecret.toString());
+                writer.flush();
+                writer.close();
+                os.close();
+                BufferedReader bfr = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String responseString = bfr.readLine();
+                response = (JSONObject) new JSONTokener(responseString).nextValue();
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
             }
-            return reply;
-        } catch (InterruptedException | ExecutionException | JSONException | NullPointerException e) {
-            e.printStackTrace();
+            return response;
         }
-        return null;
+
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            serviceCallback.run(); //pass result
+        }
     }
 
-    private JSONObject addSecret(JSONObject withoutSecret){
+    private class ServiceCallback implements Runnable {
+        private final JSONObject response;
 
-        JSONObject withSecret;
-        try{
-            if(withoutSecret.has(SECRET_LABEL))
-                return withoutSecret;
-            withSecret = withoutSecret.put(SECRET_LABEL,SECRET);
-            return withSecret;
-        } catch (JSONException e) {
-            e.printStackTrace();
+        public ServiceCallback(JSONObject response) {
+            this.response = response;
         }
-        return withoutSecret;
+
+        public void run() {}
     }
+
+    private class RequestCallback implements Runnable {
+        private final Boolean response;
+
+        public RequestCallback(Boolean response) {
+            this.response = response;
+        }
+
+        @Override
+        public void run() {}
+    }
+
+    public void registrationRequest(final RequestCallback requestCallback) {
+        helpers.setSpinner();
+        new ServiceRequest(Helpers.getString(R.string.registration_uri), new JSONObject(), new ServiceCallback() {
+            @Override
+            public void run(JSONObject response) {
+                helpers.removeSpinner();
+                if (response.optString("status").equalsIgnoreCase("ok")) {
+                    JSONObject responseData = response.optJSONObject("data");
+                    helpers.getUser().setId(responseData.optInt("userid"));
+                    categoryRequest(new RequestCallback() {
+                        @Override
+                        public void run(Boolean response2) {
+                            if (response2) {
+                                helpers.saveObj("pf","user",helpers.getUser().parse());
+                                requestCallback.run(); //true
+                            }
+                            requestCallback.run(); // false
+                        }
+                    });
+                } else if (response.optString("status").equalsIgnoreCase("ko")) {
+                    Helpers.showAlert(response.optInt("errno"));
+                    requestCallback.run(); //false
+                }
+            }
+        }).execute();
+    }
+
+    public void categoryRequest(final RequestCallback requestCallback) {
+        new ServiceRequest(Helpers.getString(R.string.getcategories_uri), new JSONObject(), new ServiceCallback() {
+            @Override
+            public void run(JSONObject response) {
+                if (response.optString("status").equalsIgnoreCase("ok")) {
+                    JSONObject responseData = response.optJSONObject("data");
+                    JSONArray responseCategories = responseData.optJSONArray("categories");
+                    ArrayList<Category> categories = new ArrayList<Category>();
+                    for (int i=0;i<responseCategories.length();i++) {
+                        JSONObject responseCategory = responseCategories.optJSONObject(i);
+                        ArrayList<SubCategory> subcategories = new ArrayList<SubCategory>();
+                        for (int j=0;j<responseCategory.optJSONArray("subcategories").length();j++) {
+                            JSONObject responseSubCategory = responseCategory.optJSONArray("subcategories").optJSONObject(j);
+                            subcategories.add(new SubCategory(responseSubCategory.optInt("subcategoryid"), responseSubCategory.optString("subcategoryname")));
+                        }
+                        categories.add(new Category(responseCategory.optInt("categoryid"),responseCategory.optString("category"),subcategories));
+                    }
+                    helpers.setCategories(categories);
+                    helpers.saveObj("pf","user",Parser.parseCategories(helpers.getCategories()));
+                    requestCallback.run(); //true
+                } else if (response.optString("status").equalsIgnoreCase("ko")) {
+                    Helpers.showAlert(response.optInt("errno"));
+                    requestCallback.run(); //false
+                }
+            }
+        }).execute();
+    }
+
+    public void askSuggestionRequest(final QuestionData questionData, final RequestCallback requestCallback) {
+        helpers.setSpinner();
+        new ServiceRequest(Helpers.getString(R.string.asksuggestion_uri), questionData.parse(), new ServiceCallback() {
+            @Override
+            public void run(JSONObject response) {
+                helpers.removeSpinner();
+                if (response.optString("status").equalsIgnoreCase("ok")) {
+                    JSONObject responseData = response.optJSONObject("data");
+                    Question question = new Question(responseData.optInt("questionid"),questionData,responseData.optInt("timestamp"),null);
+                    helpers.getQuestions().add(question);
+                    helpers.saveObj("pf", "user", Parser.parseQuestions(helpers.getQuestions()));
+                    requestCallback.run(); //true
+                } else if (response.optString("status").equalsIgnoreCase("ko")) {
+                    Helpers.showAlert(response.optInt("errno"));
+                    requestCallback.run(); //false
+                }
+            }
+        }).execute();
+    }
+
+    public void getSuggestsRequest(int[] questionsId, final RequestCallback requestCallback) {
+        new ServiceRequest(Helpers.getString(R.string.getsuggests_uri), questionsId, new ServiceCallback() {
+            @Override
+            public void run(JSONObject response) {
+                if (response.optString("status").equalsIgnoreCase("ok")) {
+                    JSONObject responseData = response.optJSONObject("data");
+                    JSONArray responseSuggests = responseData.optJSONArray("suggests");
+                    for (Question question:helpers.getQuestions()) {
+                        for (int i=0;i<responseSuggests.length();i++) {
+                            JSONObject responseSuggest = responseSuggests.optJSONObject(i);
+                            Suggest suggest = new Suggest(responseSuggest.optInt("suggestid"),responseSuggest.optString("text"));
+                            if (question.getId() == responseSuggest.optInt("questionid")) {
+                                question.setSuggest(suggest);
+                                break;
+                            }
+                        }
+                    }
+                    helpers.saveObj("pf","user",Parser.parseQuestions(helpers.getQuestions()));
+                    requestCallback.run(); //true
+                } else if (response.optString("status").equalsIgnoreCase("ko")) {
+                    Helpers.showAlert(response.optInt("errno"));
+                    requestCallback.run(); //false
+                }
+            }
+        }).execute();
+    }
+
+    //TODO Snellire CommunicationHandler con i parser
 }
