@@ -36,7 +36,7 @@ public class Parser {
         JSONArray categories = obj.optJSONArray("categorieslist");
         for (int i=0;i<categories.length();i++) {
             JSONObject category = categories.optJSONObject(i);
-            savedCategories.add(new Category(category.optInt("id"), category.optString("name"), generateSubCategories(category.optJSONArray("subcategories"))));
+            savedCategories.add(new Category(category.optInt("categoryid"), category.optString("category"), generateSubCategories(category.optJSONArray("subcategories"))));
         }
         return savedCategories;
     }
@@ -45,7 +45,7 @@ public class Parser {
         ArrayList<SubCategory> savedSubCategories = new ArrayList<>();
         for (int i=0;i<subcategories.length();i++) {
             JSONObject subcategory = subcategories.optJSONObject(i);
-            savedSubCategories.add(new SubCategory(subcategory.optInt("id"), subcategory.optString("name")));
+            savedSubCategories.add(new SubCategory(subcategory.optInt("subcategoryid"), subcategory.optString("subcategoryname")));
         }
         return savedSubCategories;
     }

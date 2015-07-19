@@ -24,8 +24,8 @@ public class SubCategory {
     public JSONObject parse() {
         try {
             return new JSONObject()
-                    .put("id",id)
-                    .put("name",name);
+                    .put("subcategoryid",id)
+                    .put("subcategoryname",name);
         } catch (JSONException e) {
             e.printStackTrace();
             return null;

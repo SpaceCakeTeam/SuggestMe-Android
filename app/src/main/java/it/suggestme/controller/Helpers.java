@@ -112,7 +112,7 @@ public class Helpers {
         SharedPreferences sp = ctx.getSharedPreferences(name, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, obj.toString());
-        editor.commit();
+        editor.apply();
     }
 
     public JSONObject getSavedObj(String name, String key) {
@@ -131,7 +131,7 @@ public class Helpers {
         SharedPreferences sp = ctx.getSharedPreferences(name, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, text);
-        editor.commit();
+        editor.apply();
     }
 
     public String getSavedString(String name, String key) {
@@ -145,7 +145,7 @@ public class Helpers {
         SharedPreferences sp = ctx.getSharedPreferences(name, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.remove(key);
-        editor.commit();
+        editor.apply();
     }
 
     public User getUser() {
