@@ -1,6 +1,5 @@
 package it.suggestme.model;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,8 +34,8 @@ public class Category {
     public JSONObject parse() {
         try {
             return new JSONObject()
-                    .put("id",id)
-                    .put("name",name)
+                    .put("categoryid",id)
+                    .put("category",name)
                     .put("subcategories", Parser.parseSubCategories(subcategories));
         } catch (JSONException e) {
             e.printStackTrace();
