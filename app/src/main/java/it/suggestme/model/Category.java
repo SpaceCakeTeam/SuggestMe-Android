@@ -1,6 +1,12 @@
 package it.suggestme.model;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+
+import it.suggestme.controller.Parser;
 
 public class Category {
 
@@ -24,5 +30,17 @@ public class Category {
 
     public ArrayList<SubCategory> getSubCategories() {
         return subcategories;
+    }
+
+    public JSONObject parse() {
+        try {
+            return new JSONObject()
+                    .put("id",id)
+                    .put("name",name)
+                    .put("subcategories", Parser.parseSubCategories(subcategories));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

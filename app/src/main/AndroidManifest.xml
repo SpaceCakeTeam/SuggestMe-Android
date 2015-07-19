@@ -15,12 +15,12 @@
         android:configChanges="orientation">
 
         <activity
-            android:name=".SceltaCategorie"
+            android:name=".ui.SceltaCategorie"
             android:screenOrientation="portrait">
         </activity>
 
         <activity
-            android:name=".SplashScreenActivity"
+            android:name=".ui.SplashScreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
@@ -32,7 +32,7 @@
         </activity>
 
         <activity
-            android:name=".TutorialActivity"
+            android:name=".ui.TutorialActivity"
             android:screenOrientation="portrait">
         </activity>
     </application>

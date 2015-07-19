@@ -1,5 +1,8 @@
 package it.suggestme.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class SubCategory {
 
     private int id;
@@ -16,5 +19,16 @@ public class SubCategory {
 
     public String getName() {
         return name;
+    }
+
+    public JSONObject parse() {
+        try {
+            return new JSONObject()
+                    .put("id",id)
+                    .put("name",name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

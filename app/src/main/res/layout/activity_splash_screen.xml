@@ -4,5 +4,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/splash_background"
-    tools:context="it.suggestme.SplashScreenActivity">
+    tools:context="it.suggestme.ui.SplashScreenActivity">
 </FrameLayout>

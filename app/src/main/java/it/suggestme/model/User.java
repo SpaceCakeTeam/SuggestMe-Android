@@ -1,5 +1,8 @@
 package it.suggestme.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class User {
 
     private int id;
@@ -12,6 +15,10 @@ public class User {
         this.userData = userData;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }
@@ -22,5 +29,17 @@ public class User {
 
     public UserData getUserData() {
         return userData;
+    }
+
+    public JSONObject parse() {
+        try {
+            return new JSONObject()
+                    .put("id",id)
+                    .put("anon",anon)
+                    .put("userdata",userData.parse());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

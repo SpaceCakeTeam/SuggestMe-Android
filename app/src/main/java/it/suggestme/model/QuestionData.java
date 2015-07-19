@@ -1,5 +1,8 @@
 package it.suggestme.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class QuestionData {
 
     private int catid;
@@ -28,5 +31,18 @@ public class QuestionData {
 
     public Boolean getAnon() {
         return anon;
+    }
+
+    public JSONObject parse() {
+        try {
+            return new JSONObject()
+                    .put("catid",catid)
+                    .put("subcatid",subcatid)
+                    .put("text",text)
+                    .put("anon",anon);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

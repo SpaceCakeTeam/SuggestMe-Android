@@ -1,5 +1,8 @@
 package it.suggestme.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Question {
 
     private int id;
@@ -22,11 +25,32 @@ public class Question {
         return questionData;
     }
 
+    public void setQuestionData(QuestionData questionData) {
+        this.questionData = questionData;
+    }
+
     public int getDate() {
         return date;
     }
 
     public Suggest getSuggest() {
         return suggest;
+    }
+
+    public void setSuggest(Suggest suggest) {
+        this.suggest = suggest;
+    }
+
+    public JSONObject parse() {
+        try {
+            return new JSONObject()
+                    .put("id",id)
+                    .put("questiondata",questionData!=null?questionData.parse():null)
+                    .put("date", date)
+                    .put("suggest",suggest!=null?suggest.parse():null);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
