@@ -8,12 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import it.suggestme.R;
+import it.suggestme.controller.CommunicationHandler;
+import it.suggestme.controller.Helpers;
 import it.suggestme.model.Suggest;
 
-public class LeMieDomandeFragment extends Fragment{
+public class LeMieDomandeFragment extends Fragment {
+
+    private Helpers helpers = Helpers.shared();
 
     private OnFragmentInteractionListener mListener;
     public static LeMieDomandeFragment newInstance() {
@@ -29,11 +34,12 @@ public class LeMieDomandeFragment extends Fragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        try {
-            Suggest.getSuggestsFromServer();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        helpers.communicationHandler.getSuggestsRequest(new JSONArray(), new CommunicationHandler.RequestCallback() {
+            @Override
+            public void callback(Boolean success) {
+
+            }
+        });
         return inflater.inflate(R.layout.fragment_le_mie_domande, container, false);
     }
 
@@ -60,6 +66,6 @@ public class LeMieDomandeFragment extends Fragment{
     }
 
     public interface OnFragmentInteractionListener {
-        public void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Uri uri);
     }
 }

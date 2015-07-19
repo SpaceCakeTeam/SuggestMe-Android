@@ -5,7 +5,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,19 +15,19 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
 import it.suggestme.R;
+import it.suggestme.controller.CommunicationHandler;
+import it.suggestme.controller.Helpers;
 import it.suggestme.model.Category;
-import it.suggestme.model.Question;
+import it.suggestme.model.QuestionData;
 import it.suggestme.model.SubCategory;
 
 public class ChatFragment extends Fragment {
+
+    private Helpers helpers = Helpers.shared();
 
     public static final String SOCIAL = "social";
     public static final String GOODS = "goods";
@@ -80,18 +79,7 @@ public class ChatFragment extends Fragment {
         else
             rootView.setBackground(getResources().getDrawable(R.drawable.form_goods_background));
 
-        try {
-            mCategoryList = Category.getCategories();
-            if(mCategoryList != null)
-                setSpinnerValues(mCategoryList);
-            else
-                throw new IOException();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(rootView.getContext(),getString(R.string.genericerror),Toast.LENGTH_LONG).show();
-        } catch (IOException e ) {
-            Toast.makeText(rootView.getContext(),getString(R.string.nocategories),Toast.LENGTH_LONG).show();
-        }
+        setSpinnerValues(helpers.getCategories());
 
         mAnonButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +110,7 @@ public class ChatFragment extends Fragment {
 
         for(Category cat : categorylist) {
             if(cat.getName().equals(this.category)) {
-                subcats = cat.getSubcategories();
+                subcats = cat.getSubCategories();
                 this.categoryId = cat.getId();
             }
         }
@@ -143,32 +131,31 @@ public class ChatFragment extends Fragment {
 
         this.subcategoryId = retrieveSelectedSubcategoryID();
 
-        Question theQuestion = new Question(this.questionBody,this.categoryId,this.subcategoryId,this.anonflag);
+        QuestionData questionData = new QuestionData(categoryId, subcategoryId, questionBody, anonflag);
 
-        Log.d("ChatFragment", "Question data: " + theQuestion.toJSONString());
+        helpers.communicationHandler.askSuggestionRequest(questionData, new CommunicationHandler.RequestCallback() {
+            @Override
+            public void callback(Boolean success) {
+                if (success) {
+                    mQuestionText.setVisibility(View.VISIBLE);
+                    mQuestionText.setText(questionBody);
 
-        try {
-            theQuestion.commitQuestionToServer();
-            mQuestionText.setVisibility(View.VISIBLE);
-            mQuestionText.setText(this.questionBody);
+                    mQuestionEditor.setText("");
+                    mQuestionEditor.clearFocus();
 
-            mQuestionEditor.setText("");
-            mQuestionEditor.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mQuestionEditor.getWindowToken(), 0);
 
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(mQuestionEditor.getWindowToken(), 0);
-
-            mQuestionEditor.setVisibility(View.INVISIBLE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(getActivity(),getString(R.string.senderror),Toast.LENGTH_LONG).show();
-        }
+                    mQuestionEditor.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
     }
 
     private int retrieveSelectedSubcategoryID() {
         for(Category cat : mCategoryList) {
             if(cat.getName().equals(this.category) ) {
-                for(SubCategory sub : cat.getSubcategories()) {
+                for(SubCategory sub : cat.getSubCategories()) {
                     if(sub.getName().equals(mSpinner.getSelectedItem().toString()))
                         return sub.getId();
                 }
@@ -202,6 +189,6 @@ public class ChatFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        public void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Uri uri);
     }
 }

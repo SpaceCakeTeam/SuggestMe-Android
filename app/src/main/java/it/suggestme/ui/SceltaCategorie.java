@@ -8,19 +8,17 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
 import it.suggestme.R;
+import it.suggestme.controller.Helpers;
 import it.suggestme.ui.fragment.AboutFragment;
 import it.suggestme.ui.fragment.ChatFragment;
 import it.suggestme.ui.fragment.LeMieDomandeFragment;
 import it.suggestme.ui.fragment.LoginFragment;
 import it.suggestme.ui.fragment.NavigationDrawerFragment;
 import it.suggestme.ui.fragment.SceltaCategorieFragment;
-import it.suggestme.model.User;
-import it.suggestme.util.PreferencesManager;
 
 public class SceltaCategorie extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
@@ -29,6 +27,8 @@ public class SceltaCategorie extends AppCompatActivity
             AboutFragment.OnFragmentInteractionListener,
             ChatFragment.OnFragmentInteractionListener {
 
+    private Helpers helpers = Helpers.shared();
+
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
     @Override
@@ -36,19 +36,17 @@ public class SceltaCategorie extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scelta_categorie);
 
-        PreferencesManager.getPreferencesManagerInstance().setContext(this);
+        helpers.setCtx(this);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = this.getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(this.getResources().getColor(R.color.palette_white_transparent));
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().setStatusBarColor(this.getResources().getColor(R.color.palette_white_transparent));
         }
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
 
         getSupportFragmentManager().beginTransaction().replace(R.id.container, SceltaCategorieFragment.newInstance()).commit();
-        User.getUserInstance();
         restoreActionBar();
     }
 
@@ -57,22 +55,26 @@ public class SceltaCategorie extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position) {
             case 0:
-                fragmentManager.beginTransaction()
+                fragmentManager
+                        .beginTransaction()
                         .replace(R.id.container, LeMieDomandeFragment.newInstance())
                         .commit();
                 break;
             case 1:
-                fragmentManager.beginTransaction()
+                fragmentManager
+                        .beginTransaction()
                         .replace(R.id.container, SceltaCategorieFragment.newInstance())
                         .commit();
                 break;
             case 2:
-                fragmentManager.beginTransaction()
+                fragmentManager
+                        .beginTransaction()
                         .replace(R.id.container, LoginFragment.newInstance())
                         .commit();
                 break;
             case 3:
-                fragmentManager.beginTransaction()
+                fragmentManager
+                        .beginTransaction()
                         .replace(R.id.container, AboutFragment.newInstance())
                         .commit();
                 break;
@@ -106,6 +108,5 @@ public class SceltaCategorie extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-    }
+    public void onFragmentInteraction(Uri uri) {}
 }
