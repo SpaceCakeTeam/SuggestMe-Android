@@ -27,8 +27,6 @@ public class SceltaCategorie extends AppCompatActivity
             AboutFragment.OnFragmentInteractionListener,
             ChatFragment.OnFragmentInteractionListener {
 
-    private Helpers helpers = Helpers.shared();
-
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
     @Override
@@ -36,7 +34,7 @@ public class SceltaCategorie extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scelta_categorie);
 
-        helpers.setCtx(this);
+        Helpers.shared().setCtx(this);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
