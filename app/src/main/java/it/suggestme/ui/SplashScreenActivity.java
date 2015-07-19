@@ -8,10 +8,13 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import it.suggestme.R;
+import it.suggestme.controller.Helpers;
 
 public class SplashScreenActivity extends Activity {
 
     private static final int SPLASH_TIMER = 500;
+
+    private Helpers helpers = Helpers.shared();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,13 +25,10 @@ public class SplashScreenActivity extends Activity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                SharedPreferences sharedPref = getSharedPreferences(getString(R.string.tutorial_shared_prefs), Context.MODE_PRIVATE);
-                if(sharedPref.contains(getResources().getString(R.string.tutorial_shared_prefs)) && sharedPref.getInt(getResources().getString(R.string.tutorial_shared_prefs), 0 ) == 1) {
-                    final Intent mainIntent = new Intent(SplashScreenActivity.this, SceltaCategorie.class);
-                    SplashScreenActivity.this.startActivity(mainIntent);
+                if(helpers.setDataUser()) {
+                    SplashScreenActivity.this.startActivity(new Intent(SplashScreenActivity.this, SceltaCategorie.class));
                 } else {
-                    final Intent mainIntent = new Intent(SplashScreenActivity.this, TutorialActivity.class);
-                    SplashScreenActivity.this.startActivity(mainIntent);
+                    SplashScreenActivity.this.startActivity(new Intent(SplashScreenActivity.this, TutorialActivity.class));
                 }
                 SplashScreenActivity.this.finish();
             }

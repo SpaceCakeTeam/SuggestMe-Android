@@ -73,7 +73,7 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        ArrayList<String> mainList = new ArrayList<String>();
+        ArrayList<String> mainList = new ArrayList<>();
         mainList.add(getString(R.string.ham_lemiedomande));
         mainList.add(getString(R.string.ham_categorie));
         mainList.add(getString(R.string.ham_login));
@@ -188,10 +188,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     private void showGlobalContextActionBar() {
@@ -203,7 +200,7 @@ public class NavigationDrawerFragment extends Fragment {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
-    public static interface NavigationDrawerCallbacks {
+    public interface NavigationDrawerCallbacks {
         void onNavigationDrawerItemSelected(int position);
     }
 }

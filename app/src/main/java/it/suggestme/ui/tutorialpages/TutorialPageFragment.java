@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,17 +11,21 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import it.suggestme.R;
+import it.suggestme.controller.CommunicationHandler;
+import it.suggestme.controller.Helpers;
 import it.suggestme.ui.SceltaCategorie;
 
 public class TutorialPageFragment extends Fragment {
 
+    private Helpers helpers = Helpers.shared();
+
     private int mTutorialPage = 0;
 
     private final int WELCOMEPAGE = 0;
-    private final int ANONPAGE    = 1;
-    private final int CHATPAGE    = 2;
-    private final int WAITPAGE    = 3;
-    private final int LOGINPAGE   = 4;
+    private final int ANONPAGE = 1;
+    private final int CHATPAGE = 2;
+    private final int WAITPAGE = 3;
+    private final int LOGINPAGE = 4;
 
     public TutorialPageFragment setTutorialPage(int position) {
         this.mTutorialPage = position;
@@ -32,7 +35,7 @@ public class TutorialPageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         int layoutToLoad = R.layout.fragment_tutorial__page_1;
-        switch (mTutorialPage){
+        switch (mTutorialPage) {
             case WELCOMEPAGE:
                 layoutToLoad = R.layout.fragment_tutorial__page_1;
                 break;
@@ -49,14 +52,12 @@ public class TutorialPageFragment extends Fragment {
                 layoutToLoad = R.layout.fragment_tutorial__page_5;
                 break;
             default:
-                Log.e(getResources().getString(R.string.tutorial_err_lbl), getResources().getString(R.string.tutorial_err_pagenotfound));
                 break;
         }
 
         View rootView = inflater.inflate(layoutToLoad, container, false);
 
-        if(mTutorialPage == LOGINPAGE){
-
+        if(mTutorialPage == LOGINPAGE) {
             rootView.findViewById(R.id.nonora_imgbtn).setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -68,8 +69,7 @@ public class TutorialPageFragment extends Fragment {
                             v.invalidate();
                             return true;
                         case MotionEvent.ACTION_UP:
-                            Intent i = new Intent(getActivity(), SceltaCategorie.class);
-                            startActivity(i);
+                            login();
                             view = (ImageButton) v;
                             view.getBackground().clearColorFilter();
                             view.invalidate();
@@ -82,5 +82,16 @@ public class TutorialPageFragment extends Fragment {
 
         }
         return rootView;
+    }
+
+    private void login() {
+        helpers.communicationHandler.registrationRequest(new CommunicationHandler.RequestCallback() {
+            @Override
+            public void callback(Boolean success) {
+                if (success) {
+                    startActivity(new Intent(getActivity(), SceltaCategorie.class));
+                }
+            }
+        });
     }
 }

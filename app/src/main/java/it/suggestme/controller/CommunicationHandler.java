@@ -28,7 +28,7 @@ public class CommunicationHandler {
 
     private Helpers helpers = Helpers.shared();
     private interface ServiceCallback {void callback(JSONObject obj);}
-    private interface RequestCallback {void callback(Boolean success);}
+    public interface RequestCallback {void callback(Boolean success);}
 
     public CommunicationHandler() {}
 
@@ -103,7 +103,7 @@ public class CommunicationHandler {
                         @Override
                         public void callback(Boolean success) {
                             if (success) {
-                                helpers.saveObj("pf", "user", helpers.getUser().parse());
+                                helpers.saveObj("user", helpers.getUser().parse());
                             }
                             requestCallback.callback(success);
                         }
@@ -126,7 +126,7 @@ public class CommunicationHandler {
                     try {
                         ArrayList<Category> categories = Parser.generateCategories(new JSONObject().put("categorieslist", responseCategories));
                         helpers.setCategories(categories);
-                        helpers.saveObj("pf","user",Parser.parseCategories(helpers.getCategories()));
+                        helpers.saveObj("user",Parser.parseCategories(helpers.getCategories()));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -149,7 +149,7 @@ public class CommunicationHandler {
                     JSONObject responseData = response.optJSONObject("data");
                     Question question = new Question(responseData.optInt("questionid"),questionData,responseData.optInt("timestamp"),null);
                     helpers.getQuestions().add(question);
-                    helpers.saveObj("pf", "user", Parser.parseQuestions(helpers.getQuestions()));
+                    helpers.saveObj("user", Parser.parseQuestions(helpers.getQuestions()));
                     requestCallback.callback(true);
                 } else if (response.optString("status").equalsIgnoreCase("ko")) {
                     Helpers.showAlert(response.optInt("errno"));
@@ -176,7 +176,7 @@ public class CommunicationHandler {
                             }
                         }
                     }
-                    helpers.saveObj("pf","user",Parser.parseQuestions(helpers.getQuestions()));
+                    helpers.saveObj("user",Parser.parseQuestions(helpers.getQuestions()));
                     requestCallback.callback(true);
                 } else if (response.optString("status").equalsIgnoreCase("ko")) {
                     Helpers.showAlert(response.optInt("errno"));

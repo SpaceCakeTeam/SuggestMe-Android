@@ -31,11 +31,14 @@ public class Helpers {
 
     private static Context ctx;
 
+    private final static String filename = "preferencesfile";
+
     private User user;
     private ArrayList<Category> categories;
     private ArrayList<Question> questions;
     private Question currentQuestion;
 
+    public CommunicationHandler communicationHandler;
     private static JSONObject alerts;
 
     private Helpers() {
@@ -49,6 +52,7 @@ public class Helpers {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        communicationHandler = new CommunicationHandler();
     }
 
     public static Helpers shared() {
@@ -57,11 +61,11 @@ public class Helpers {
         return mInstance;
     }
 
-    public static void setCtx(Context currCtx) {
+    public void setCtx(Context currCtx) {
         ctx = currCtx;
     }
 
-    public static Context getCtx() {
+    public Context getCtx() {
         return ctx;
     }
 
@@ -103,21 +107,21 @@ public class Helpers {
         //TODO
     }
 
-    public boolean keyExist(String name ,String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(name, Context.MODE_PRIVATE);
+    public boolean keyExist(String key) {
+        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
         return sp.contains(key);
     }
 
-    public void saveObj(String name, String key, JSONObject obj) {
-        SharedPreferences sp = ctx.getSharedPreferences(name, Context.MODE_PRIVATE);
+    public void saveObj(String key, JSONObject obj) {
+        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, obj.toString());
         editor.apply();
     }
 
-    public JSONObject getSavedObj(String name, String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(name, Context.MODE_PRIVATE);
-        if(!keyExist(name, key))
+    public JSONObject getSavedObj(String key) {
+        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
+        if(!keyExist(key))
             return null;
         try {
             return (JSONObject) new JSONTokener(sp.getString(key,null)).nextValue();
@@ -127,22 +131,36 @@ public class Helpers {
         }
     }
 
-    public void saveString(String name, String key, String text) {
-        SharedPreferences sp = ctx.getSharedPreferences(name, Context.MODE_PRIVATE);
+    public void saveString(String key, String text) {
+        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, text);
         editor.apply();
     }
 
-    public String getSavedString(String name, String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(name, Context.MODE_PRIVATE);
-        if(!keyExist(name, key))
+    public String getSavedString(String key) {
+        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
+        if(!keyExist(key))
             return null;
         return sp.getString(key, null);
     }
 
-    public void removePreference(String name, String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(name, Context.MODE_PRIVATE);
+    public void saveInt(String key, int val) {
+        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt(key, val);
+        editor.apply();
+    }
+
+    public int getSavedInt(String key) {
+        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
+        if(!keyExist(key))
+            return -1;
+        return sp.getInt(key, -1);
+    }
+
+    public void removePreference(String key) {
+        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.remove(key);
         editor.apply();
@@ -165,10 +183,10 @@ public class Helpers {
     }
 
     public boolean setDataUser(){
-        if (keyExist("pf","user")) {
-            user = Parser.generateUser(getSavedObj("pf", "user"));
-            categories = Parser.generateCategories(getSavedObj("pf", "categories"));
-            questions = Parser.generateQuestions(getSavedObj("pf", "questions"));
+        if (keyExist("user")) {
+            user = Parser.generateUser(getSavedObj("user"));
+            categories = Parser.generateCategories(getSavedObj("categories"));
+            questions = Parser.generateQuestions(getSavedObj("questions"));
             return true;
         } else {
             user = new User(-1, true, new UserData("","",0, UserData.Gender.u,""));
