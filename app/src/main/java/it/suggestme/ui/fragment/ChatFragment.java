@@ -27,8 +27,6 @@ import it.suggestme.model.SubCategory;
 
 public class ChatFragment extends Fragment {
 
-    private Helpers helpers = Helpers.shared();
-
     public static final String SOCIAL = "social";
     public static final String GOODS = "goods";
     private static final String CATEGORY = "category_bundle_arg";
@@ -79,7 +77,7 @@ public class ChatFragment extends Fragment {
         else
             rootView.setBackground(getResources().getDrawable(R.drawable.form_goods_background));
 
-        setSpinnerValues(helpers.getCategories());
+        setSpinnerValues(Helpers.shared().getCategories());
 
         mAnonButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,7 +131,7 @@ public class ChatFragment extends Fragment {
 
         QuestionData questionData = new QuestionData(categoryId, subcategoryId, questionBody, anonflag);
 
-        helpers.communicationHandler.askSuggestionRequest(questionData, new CommunicationHandler.RequestCallback() {
+        Helpers.shared().communicationHandler.askSuggestionRequest(questionData, new CommunicationHandler.RequestCallback() {
             @Override
             public void callback(Boolean success) {
                 if (success) {

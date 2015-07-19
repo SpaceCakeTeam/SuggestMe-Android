@@ -18,8 +18,6 @@ import it.suggestme.model.Suggest;
 
 public class LeMieDomandeFragment extends Fragment {
 
-    private Helpers helpers = Helpers.shared();
-
     private OnFragmentInteractionListener mListener;
     public static LeMieDomandeFragment newInstance() {
         return new LeMieDomandeFragment();
@@ -34,7 +32,7 @@ public class LeMieDomandeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        helpers.communicationHandler.getSuggestsRequest(new JSONArray(), new CommunicationHandler.RequestCallback() {
+        Helpers.shared().communicationHandler.getSuggestsRequest(new JSONArray(), new CommunicationHandler.RequestCallback() {
             @Override
             public void callback(Boolean success) {
 
