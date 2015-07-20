@@ -1,0 +1,59 @@
+package it.suggestme.ui.adapter;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
+import it.suggestme.R;
+import it.suggestme.controller.Helpers;
+import it.suggestme.model.Question;
+import it.suggestme.ui.fragment.ChatFragment;
+
+public class ReplyListAdapter extends ArrayAdapter<Question> {
+
+    public ReplyListAdapter(Context context, int resource, ArrayList<Question> objects) {
+        super(context, resource, objects);
+    }
+
+    @Override
+    public View getView( int position, View convertView, ViewGroup parent ) {
+
+        View theView = convertView;
+
+        if(theView == null) {
+            LayoutInflater li;
+            li = LayoutInflater.from(getContext());
+            theView = li.inflate(R.layout.le_mie_domande_list_item, null);
+        }
+
+        final Question item = getItem(position);
+
+        if(item != null) {
+
+            final ImageView caticon = (ImageView) theView.findViewById(R.id.list_row_category_image);
+            final TextView  catname = (TextView)  theView.findViewById(R.id.list_row_title);
+            final ImageView replied = (ImageView) theView.findViewById(R.id.list_row_replied);
+
+
+            if(Helpers.shared().getCategories().get(item.getQuestionData().getCatId()).getName().toLowerCase() == ChatFragment.SOCIAL)
+                caticon.setBackground(getContext().getResources().getDrawable(R.drawable.ic_questionlist_social));
+            else
+                caticon.setBackground(getContext().getResources().getDrawable(R.drawable.ic_questionlist_goods));
+
+            catname.setText(Helpers.shared().getCategories().get(item.getId()).getSubCategories().get(item.getQuestionData().getSubCatId()).getName());
+
+            if(item.getSuggest()!=null)
+                replied.setBackground(getContext().getResources().getDrawable(R.drawable.ic_questionlist_replied));
+            else
+                replied.setBackground(getContext().getResources().getDrawable(R.drawable.ic_questionlist_pending_suggest));
+        }
+
+        return theView;
+    }
+}

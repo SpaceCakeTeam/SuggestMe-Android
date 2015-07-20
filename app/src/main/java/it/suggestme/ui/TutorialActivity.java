@@ -8,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.view.WindowManager;
 
 import it.suggestme.R;
+import it.suggestme.controller.Helpers;
 import it.suggestme.ui.adapter.ScreenSlidePagerAdapter;
 import it.suggestme.ui.tutorialpages.ZoomOutPageTransformer;
 
@@ -19,6 +20,7 @@ public class TutorialActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Helpers.shared().setCtx(this);
         setContentView(R.layout.activity_tutorial);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

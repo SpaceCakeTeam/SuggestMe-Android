@@ -36,10 +36,10 @@ public class QuestionData {
     public JSONObject parse() {
         try {
             return new JSONObject()
-                    .put("catid",catid)
-                    .put("subcatid",subcatid)
+                    .put("categoryid",catid)
+                    .put("subcategoryid",subcatid)
                     .put("text",text)
-                    .put("anon",anon);
+                    .put("anonflag",anon);
         } catch (JSONException e) {
             e.printStackTrace();
             return null;

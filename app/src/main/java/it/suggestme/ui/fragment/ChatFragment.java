@@ -32,7 +32,6 @@ public class ChatFragment extends Fragment {
     private static final String CATEGORY = "category_bundle_arg";
     private String category;
     private OnFragmentInteractionListener mListener;
-    private ArrayList<Category> mCategoryList;
     private EditText mQuestionEditor;
     private Spinner mSpinner;
     private ImageButton mAnonButton;
@@ -151,7 +150,7 @@ public class ChatFragment extends Fragment {
     }
 
     private int retrieveSelectedSubcategoryID() {
-        for(Category cat : mCategoryList) {
+        for(Category cat : Helpers.shared().getCategories()) {
             if(cat.getName().equals(this.category) ) {
                 for(SubCategory sub : cat.getSubCategories()) {
                     if(sub.getName().equals(mSpinner.getSelectedItem().toString()))

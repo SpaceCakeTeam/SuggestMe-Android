@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import it.suggestme.R;
+import it.suggestme.controller.Helpers;
 
 public class LoginFragment extends Fragment {
 
