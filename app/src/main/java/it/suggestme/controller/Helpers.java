@@ -24,11 +24,6 @@ public class Helpers {
 
     private static Helpers mInstance;
 
-    public final static float screenHeight = getDisplay().y;
-    public final static float screenWidth = getDisplay().x;
-    public final static float navBarHeight = 44; //TODO
-    public final static float statusBarHeight = 20; //TODO
-
     private static Context ctx;
 
     private final static String filename = "preferencesfile";
@@ -69,12 +64,20 @@ public class Helpers {
         return ctx;
     }
 
-    private static Point getDisplay() {
+    private static int getDisplayHeight() {
         WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        return size;
+        return size.y;
+    }
+
+    private static int getDisplayWidth() {
+        WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return size.x;
     }
 
     public static String getString(int resId) {
@@ -186,7 +189,9 @@ public class Helpers {
         if (keyExist("user")) {
             user = Parser.generateUser(getSavedObj("user"));
             categories = Parser.generateCategories(getSavedObj("categories"));
-            questions = Parser.generateQuestions(getSavedObj("questions"));
+            if (keyExist("questions"))
+                questions = Parser.generateQuestions(getSavedObj("questions"));
+            else questions = new ArrayList<>();
             return true;
         } else {
             user = new User(-1, true, new UserData("","",0, UserData.Gender.u,""));

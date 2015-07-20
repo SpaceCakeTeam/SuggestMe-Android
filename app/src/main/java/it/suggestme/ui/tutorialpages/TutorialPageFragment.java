@@ -17,8 +17,6 @@ import it.suggestme.ui.SceltaCategorie;
 
 public class TutorialPageFragment extends Fragment {
 
-    private Helpers helpers = Helpers.shared();
-
     private int mTutorialPage = 0;
 
     private final int WELCOMEPAGE = 0;
@@ -85,11 +83,11 @@ public class TutorialPageFragment extends Fragment {
     }
 
     private void login() {
-        helpers.communicationHandler.registrationRequest(new CommunicationHandler.RequestCallback() {
+        Helpers.shared().communicationHandler.registrationRequest(new CommunicationHandler.RequestCallback() {
             @Override
             public void callback(Boolean success) {
                 if (success) {
-                    startActivity(new Intent(getActivity(), SceltaCategorie.class));
+                    startActivity(new Intent(getActivity(), SceltaCategorie.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK));
                 }
             }
         });

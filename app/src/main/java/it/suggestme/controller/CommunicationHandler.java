@@ -26,7 +26,6 @@ import it.suggestme.model.User;
 
 public class CommunicationHandler {
 
-    private Helpers helpers = Helpers.shared();
     private interface ServiceCallback {void callback(JSONObject obj);}
     public interface RequestCallback {void callback(Boolean success);}
 
@@ -48,7 +47,7 @@ public class CommunicationHandler {
         @Override
         protected void onPreExecute(){
             try {
-                User user = helpers.getUser();
+                User user = Helpers.shared().getUser();
                 requestDataWithIdAndSecret = new JSONObject()
                         .put("userid", user.getId())
                         .put("secret", Helpers.getString(R.string.secret));
@@ -91,19 +90,19 @@ public class CommunicationHandler {
     }
 
     public void registrationRequest(final RequestCallback requestCallback) {
-        helpers.setSpinner();
+        Helpers.shared().setSpinner();
         new ServiceRequest(Helpers.getString(R.string.registration_uri), new JSONObject(), new ServiceCallback() {
             @Override
             public void callback(JSONObject response) {
-                helpers.removeSpinner();
+                Helpers.shared().removeSpinner();
                 if (response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
-                    helpers.getUser().setId(responseData.optInt("userid"));
+                    Helpers.shared().getUser().setId(responseData.optInt("userid"));
                     categoryRequest(new RequestCallback() {
                         @Override
                         public void callback(Boolean success) {
                             if (success) {
-                                helpers.saveObj("user", helpers.getUser().parse());
+                                Helpers.shared().saveObj("user", Helpers.shared().getUser().parse());
                             }
                             requestCallback.callback(success);
                         }
@@ -125,8 +124,8 @@ public class CommunicationHandler {
                     JSONArray responseCategories = responseData.optJSONArray("categories");
                     try {
                         ArrayList<Category> categories = Parser.generateCategories(new JSONObject().put("categorieslist", responseCategories));
-                        helpers.setCategories(categories);
-                        helpers.saveObj("user",Parser.parseCategories(helpers.getCategories()));
+                        Helpers.shared().setCategories(categories);
+                        Helpers.shared().saveObj("categories", Parser.parseCategories(Helpers.shared().getCategories()));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -140,16 +139,16 @@ public class CommunicationHandler {
     }
 
     public void askSuggestionRequest(final QuestionData questionData, final RequestCallback requestCallback) {
-        helpers.setSpinner();
+        Helpers.shared().setSpinner();
         new ServiceRequest(Helpers.getString(R.string.asksuggestion_uri), questionData.parse(), new ServiceCallback() {
             @Override
             public void callback(JSONObject response) {
-                helpers.removeSpinner();
+                Helpers.shared().removeSpinner();
                 if (response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
                     Question question = new Question(responseData.optInt("questionid"),questionData,responseData.optInt("timestamp"),null);
-                    helpers.getQuestions().add(question);
-                    helpers.saveObj("user", Parser.parseQuestions(helpers.getQuestions()));
+                    Helpers.shared().getQuestions().add(question);
+                    Helpers.shared().saveObj("questions", Parser.parseQuestions(Helpers.shared().getQuestions()));
                     requestCallback.callback(true);
                 } else if (response.optString("status").equalsIgnoreCase("ko")) {
                     Helpers.showAlert(response.optInt("errno"));
@@ -166,7 +165,7 @@ public class CommunicationHandler {
                 if (response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
                     JSONArray responseSuggests = responseData.optJSONArray("suggests");
-                    for (Question question:helpers.getQuestions()) {
+                    for (Question question:Helpers.shared().getQuestions()) {
                         for (int i=0;i<responseSuggests.length();i++) {
                             JSONObject responseSuggest = responseSuggests.optJSONObject(i);
                             Suggest suggest = new Suggest(responseSuggest.optInt("suggestid"),responseSuggest.optString("text"));
@@ -176,7 +175,7 @@ public class CommunicationHandler {
                             }
                         }
                     }
-                    helpers.saveObj("user",Parser.parseQuestions(helpers.getQuestions()));
+                    Helpers.shared().saveObj("questions", Parser.parseQuestions(Helpers.shared().getQuestions()));
                     requestCallback.callback(true);
                 } else if (response.optString("status").equalsIgnoreCase("ko")) {
                     Helpers.showAlert(response.optInt("errno"));

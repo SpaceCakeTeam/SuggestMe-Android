@@ -28,7 +28,7 @@ public class Parser {
     }
 
     private static UserData generateUserData(JSONObject obj) {
-        return new UserData(obj.optString("name"), obj.optString("surname"), obj.optInt("birthdate"), (UserData.Gender)obj.opt("gender"), obj.optString("email"));
+        return new UserData(obj.optString("name"), obj.optString("surname"), obj.optInt("birthdate"), UserData.Gender.valueOf(obj.optString("gender")), obj.optString("email"));
     }
 
     public static ArrayList<Category> generateCategories(JSONObject obj) {
@@ -61,7 +61,7 @@ public class Parser {
     }
 
     private static QuestionData generateQuestionData(JSONObject obj) {
-            return obj!=null?new QuestionData(obj.optInt("catid"), obj.optInt("subcatid"), obj.optString("text"), obj.optBoolean("anon")):null;
+            return obj!=null?new QuestionData(obj.optInt("categoryid"), obj.optInt("subcategoryid"), obj.optString("text"), obj.optBoolean("anonflag")):null;
     }
 
     private static Suggest generateSuggest(JSONObject obj) {
