@@ -1,11 +1,14 @@
 package it.suggestme.controller;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import it.suggestme.R;
 import it.suggestme.model.Category;
 import it.suggestme.model.Question;
 import it.suggestme.model.QuestionData;
@@ -52,7 +55,10 @@ public class Parser {
 
     public static ArrayList<Question> generateQuestions(JSONObject obj) {
         ArrayList<Question> savedQuestions = new ArrayList<>();
+
         JSONArray questions = obj.optJSONArray("questionslist");
+        Log.i(Helpers.getString(R.string.loginfo), "questions: ".concat(questions.toString()));
+
         for (int i=0;i<questions.length();i++) {
             JSONObject question = questions.optJSONObject(i);
             savedQuestions.add(new Question(question.optInt("id"), generateQuestionData(question.optJSONObject("questiondata")), question.optInt("date"), generateSuggest(question.optJSONObject("suggest"))));

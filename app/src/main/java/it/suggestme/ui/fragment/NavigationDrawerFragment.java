@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 
@@ -84,6 +85,14 @@ public class NavigationDrawerFragment extends Fragment {
                 mainList
         ));
         mMainDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+
+        RelativeLayout hamHead = (RelativeLayout) rootview.findViewById(R.id.ham_head_relativeLayout);
+        hamHead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+
         return rootview;
     }
 

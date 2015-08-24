@@ -3,6 +3,8 @@ package it.suggestme.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class Question {
 
     private int id;
@@ -45,7 +47,7 @@ public class Question {
         try {
             return new JSONObject()
                     .put("id",id)
-                    .put("questiondata",questionData!=null?questionData.parse():null)
+                    .put("questiondata", questionData != null ? questionData.parse() : null)
                     .put("date", date)
                     .put("suggest",suggest!=null?suggest.parse():null);
         } catch (JSONException e) {

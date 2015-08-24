@@ -9,20 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.util.ArrayList;
 
 import it.suggestme.R;
 import it.suggestme.controller.CommunicationHandler;
 import it.suggestme.controller.Helpers;
-import it.suggestme.model.Category;
 import it.suggestme.model.Question;
-import it.suggestme.model.SubCategory;
-import it.suggestme.model.Suggest;
+import it.suggestme.model.ReplyListItem;
 import it.suggestme.ui.adapter.ReplyListAdapter;
 
 public class LeMieDomandeFragment extends Fragment {
@@ -43,7 +39,10 @@ public class LeMieDomandeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (Helpers.shared().getQuestions().size() > 0) {
+
+        Helpers.shared().setDataUser();
+
+        if (Helpers.shared().getQuestions() != null && Helpers.shared().getQuestions().size() > 0) {
             Helpers.shared().communicationHandler.getSuggestsRequest(new JSONArray(), new CommunicationHandler.RequestCallback() {
                 @Override
                 public void callback(Boolean success) {
@@ -51,61 +50,58 @@ public class LeMieDomandeFragment extends Fragment {
                 }
             });
         }
+
         View rootView = inflater.inflate(R.layout.fragment_le_mie_domande, container, false);
         mQuestionList = (ListView) rootView.findViewById(R.id.question_list);
 
-        ArrayList<Question>      mQuestion = Question.retrieveMyQuestions();
+        ArrayList<Question>      mQuestion = Helpers.shared().getQuestions();
         ArrayList<ReplyListItem> mReplied  = new ArrayList<>();
 
-        try {
-            ArrayList<Suggest>  remoteSuggests = Suggest.getSuggestsFromServer();
-            ArrayList<Category> categories = Category.getCategories();
+        Boolean replied;
+        String categoryName;
+        String subCategoryName;
 
-            Boolean replied;
-            String categoryName;
-            String subCategoryName;
-            int suggestid;
+        JSONArray unrepliedQuestion = new JSONArray();
 
-            for( Question aQuest : mQuestion ) {
+        for( Question aQuest : mQuestion ) {
 
-                replied = false;
-                suggestid = -1;
+            replied = aQuest.getSuggest() != null;
 
-                categoryName = Category.getCategoryFromID(aQuest.getCategory(), categories);
-                subCategoryName = SubCategory.getSubCategoryNameFromID(aQuest.getSubcategoryid(),
-                        Category.getSubCategoryFromID(aQuest.getCategory(), categories));
+            if( !replied )
+                unrepliedQuestion.put(aQuest.getId());
 
-                assert remoteSuggests != null;
-                for( Suggest aSuggest : remoteSuggests ) {
+            categoryName = Helpers.shared().getCategoryFromID(aQuest.getQuestionData().getCatId()).getName();
+            subCategoryName = Helpers.shared().getSubcategoryFromID(
+                    aQuest.getQuestionData().getCatId(),
+                    aQuest.getQuestionData().getSubCatId() )
+                    .getName();
 
-                    if ( aSuggest.getQuestionID() == aQuest.getID() ) {
-                        replied = true;
-                        suggestid = aSuggest.getId();
-                    }
-                }
-
-                mReplied.add(new ReplyListItem( aQuest.getID(), suggestid, categoryName, subCategoryName, replied ));
-            }
-
-            mQuestionList.setAdapter(new ReplyListAdapter(
-                    getActivity().getApplicationContext(),
-                    R.layout.le_mie_domande_list_item,
-                    mReplied.toArray(new ReplyListItem[mReplied.size()])
-            ));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(getActivity(),getString(R.string.genericerror), Toast.LENGTH_LONG).show();
+            mReplied.add(new ReplyListItem(
+                    aQuest,
+                    aQuest.getSuggest()!=null   ?
+                            aQuest.getSuggest() :
+                            null,
+                    categoryName,
+                    subCategoryName,
+                    replied ));
         }
+
+        mQuestionList.setAdapter(new ReplyListAdapter(
+                getActivity().getApplicationContext(),
+                R.layout.le_mie_domande_list_item,
+                mReplied ));
 
         mQuestionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                Question item = mQuestionList.getItemAtPosition(i);
+                ReplyListItem rplitem = (ReplyListItem)mQuestionList.getItemAtPosition(i);
+
+                ChatFragment thefragment = ChatFragment.newInstance(rplitem.getCategoryName());
+                thefragment.setQuestionToShow(rplitem.getQuestion());
 
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.container, ChatFragment.newInstance(item.getCategoryName(),item.getQuestionID(),item.getSuggestID(),false))
+                        .replace(R.id.container, thefragment)
                         .commit();
             }
         });

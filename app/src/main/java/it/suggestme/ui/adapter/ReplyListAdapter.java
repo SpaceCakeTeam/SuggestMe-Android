@@ -12,12 +12,14 @@ import java.util.ArrayList;
 
 import it.suggestme.R;
 import it.suggestme.controller.Helpers;
+import it.suggestme.model.Category;
 import it.suggestme.model.Question;
+import it.suggestme.model.ReplyListItem;
 import it.suggestme.ui.fragment.ChatFragment;
 
-public class ReplyListAdapter extends ArrayAdapter<Question> {
+public class ReplyListAdapter extends ArrayAdapter<ReplyListItem> {
 
-    public ReplyListAdapter(Context context, int resource, ArrayList<Question> objects) {
+    public ReplyListAdapter(Context context, int resource, ArrayList<ReplyListItem> objects) {
         super(context, resource, objects);
     }
 
@@ -32,21 +34,25 @@ public class ReplyListAdapter extends ArrayAdapter<Question> {
             theView = li.inflate(R.layout.le_mie_domande_list_item, null);
         }
 
-        final Question item = getItem(position);
+        final Question item = getItem(position).getQuestion();
 
         if(item != null) {
 
-            final ImageView caticon = (ImageView) theView.findViewById(R.id.list_row_category_image);
-            final TextView  catname = (TextView)  theView.findViewById(R.id.list_row_title);
-            final ImageView replied = (ImageView) theView.findViewById(R.id.list_row_replied);
+            final ImageView caticon  = (ImageView) theView.findViewById(R.id.list_row_category_image);
+            final TextView  sCatName = (TextView)  theView.findViewById(R.id.list_row_title);
+            final ImageView replied  = (ImageView) theView.findViewById(R.id.list_row_replied);
 
 
-            if(Helpers.shared().getCategories().get(item.getQuestionData().getCatId()).getName().toLowerCase() == ChatFragment.SOCIAL)
+            if( Helpers.shared().getCategoryFromID(item.getQuestionData().getCatId()).getName().toLowerCase().equals(ChatFragment.SOCIAL) )
                 caticon.setBackground(getContext().getResources().getDrawable(R.drawable.ic_questionlist_social));
             else
                 caticon.setBackground(getContext().getResources().getDrawable(R.drawable.ic_questionlist_goods));
 
-            catname.setText(Helpers.shared().getCategories().get(item.getId()).getSubCategories().get(item.getQuestionData().getSubCatId()).getName());
+            sCatName.setText(
+                    Helpers.shared().getSubcategoryFromID(
+                            item.getQuestionData().getCatId(),
+                            item.getQuestionData().getSubCatId())
+                            .getName());
 
             if(item.getSuggest()!=null)
                 replied.setBackground(getContext().getResources().getDrawable(R.drawable.ic_questionlist_replied));
