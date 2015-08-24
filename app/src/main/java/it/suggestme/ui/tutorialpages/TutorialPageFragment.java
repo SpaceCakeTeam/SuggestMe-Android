@@ -1,14 +1,28 @@
 package it.suggestme.ui.tutorialpages;
 
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import it.suggestme.R;
 import it.suggestme.controller.CommunicationHandler;
@@ -31,7 +45,8 @@ public class TutorialPageFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+
         int layoutToLoad = R.layout.fragment_tutorial__page_1;
         switch (mTutorialPage) {
             case WELCOMEPAGE:
@@ -56,33 +71,43 @@ public class TutorialPageFragment extends Fragment {
         View rootView = inflater.inflate(layoutToLoad, container, false);
 
         if(mTutorialPage == LOGINPAGE) {
-            rootView.findViewById(R.id.nonora_imgbtn).setOnTouchListener(new View.OnTouchListener() {
+
+            rootView.findViewById(R.id.login_facebook_tutorial_button).setOnClickListener(new View.OnClickListener() {
                 @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    ImageButton view;
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            view = (ImageButton) v;
-                            view.getBackground().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
-                            v.invalidate();
-                            return true;
-                        case MotionEvent.ACTION_UP:
-                            login();
-                            view = (ImageButton) v;
-                            view.getBackground().clearColorFilter();
-                            view.invalidate();
-                            return true;
-                        default:
-                            return false;
-                    }
+                public void onClick(View v) {
+                    Helpers.shared().getFacebookAccount(TutorialPageFragment.this, new Helpers.HelperCallback() {
+                        @Override
+                        public void callback(Boolean success) {
+                            if( !success )
+                                return;
+
+                            login(Helpers.shared().getUser().parse());
+                        }
+                    });
                 }
             });
+
+            rootView.findViewById(R.id.login_twitter_tutorial_button).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Helpers.shared().getTwitterAccount();
+                    login(Helpers.shared().getUser().parse());
+                }
+            });
+
+            rootView.findViewById(R.id.login_nonora_button).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    login(new JSONObject());
+                }
+            });
+
 
         }
         return rootView;
     }
 
-    private void login() {
+    private void login( JSONObject userData ) {
         Helpers.shared().communicationHandler.registrationRequest(new CommunicationHandler.RequestCallback() {
             @Override
             public void callback(Boolean success) {
@@ -90,6 +115,13 @@ public class TutorialPageFragment extends Fragment {
                     startActivity(new Intent(getActivity(), SceltaCategorie.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK));
                 }
             }
-        });
+        }, userData);
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Helpers.shared().getFBCallbackMng().onActivityResult(requestCode, resultCode, data);
+    }
+
 }

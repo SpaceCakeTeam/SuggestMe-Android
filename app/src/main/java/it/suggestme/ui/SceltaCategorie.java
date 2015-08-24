@@ -11,6 +11,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+
 import it.suggestme.R;
 import it.suggestme.controller.Helpers;
 import it.suggestme.ui.fragment.AboutFragment;
@@ -98,6 +101,19 @@ public class SceltaCategorie extends AppCompatActivity
 
         mImageV.setLayoutParams(layoutParams);
         actionBar.setCustomView(mImageV);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AppEventsLogger.activateApp(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AppEventsLogger.deactivateApp(this);
     }
 
     @Override

@@ -7,6 +7,8 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.WindowManager;
 
+import com.facebook.appevents.AppEventsLogger;
+
 import it.suggestme.R;
 import it.suggestme.controller.Helpers;
 import it.suggestme.ui.adapter.ScreenSlidePagerAdapter;
@@ -42,5 +44,18 @@ public class TutorialActivity extends FragmentActivity {
         } else {
             mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1);
         }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AppEventsLogger.activateApp(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AppEventsLogger.deactivateApp(this);
     }
 }
