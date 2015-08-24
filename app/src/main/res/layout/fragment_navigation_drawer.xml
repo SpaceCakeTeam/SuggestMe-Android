@@ -15,19 +15,19 @@
         android:id="@+id/ham_head_relativeLayout">
 
         <ImageView
-            android:id="@+id/avatar"
+            android:id="@+id/ham_head_avatar"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/unknown_user"
             android:layout_marginTop="15dp" />
 
         <TextView
-            android:id="@+id/userName"
+            android:id="@+id/ham_head_userName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/anonymous_label"
-            android:layout_toRightOf="@id/avatar"
-            android:layout_toEndOf="@id/avatar"
+            android:layout_toRightOf="@id/ham_head_avatar"
+            android:layout_toEndOf="@id/ham_head_avatar"
             android:layout_marginTop="30dp"
             android:layout_marginLeft="15dp"
             android:layout_marginStart="15dp"

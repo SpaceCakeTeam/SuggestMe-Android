@@ -1,5 +1,7 @@
 package it.suggestme.controller;
 
+import android.app.Service;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -87,6 +89,37 @@ public class CommunicationHandler {
         @Override
         protected void onPostExecute(JSONObject result) {
             serviceCallback.callback(result);
+        }
+    }
+
+    private class ExternalServiceRequest extends AsyncTask<Void,Void,JSONObject> {
+
+        private String mRequestURL;
+        private ServiceCallback mCallback;
+
+        public ExternalServiceRequest(String url, ServiceCallback serviceCallback){
+            mRequestURL = url;
+            mCallback   = serviceCallback;
+        }
+
+        @Override
+        protected JSONObject doInBackground(Void... params) {
+            JSONObject response = new JSONObject();
+            try {
+                Drawable thumb_d = Drawable.createFromStream(new URL(mRequestURL).openStream(), "src");
+                Helpers.shared().setProfilePic(thumb_d);
+
+                response.put("status","ok");
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            mCallback.callback(result);
         }
     }
 
@@ -192,6 +225,23 @@ public class CommunicationHandler {
                     Helpers.showAlert(response.optInt("errno"));
                     requestCallback.callback(false);
                 }
+            }
+        }).execute();
+    }
+
+    public void getProfilePicture(String url, final RequestCallback requestCallback) {
+        new ExternalServiceRequest(url, new ServiceCallback() {
+            @Override
+            public void callback(JSONObject obj) {
+                try {
+                    if (obj != null && obj.getString("status").toLowerCase() == "ok") {
+                        requestCallback.callback(true);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    requestCallback.callback(false);
+                }
+                requestCallback.callback(false);
             }
         }).execute();
     }

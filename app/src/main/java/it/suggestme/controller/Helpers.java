@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -42,6 +43,7 @@ import it.suggestme.model.Question;
 import it.suggestme.model.SubCategory;
 import it.suggestme.model.User;
 import it.suggestme.model.UserData;
+import it.suggestme.ui.fragment.NavigationDrawerFragment;
 
 public class Helpers {
 
@@ -58,6 +60,8 @@ public class Helpers {
     private ArrayList<Question> questions;
     private Question currentQuestion;
     private CallbackManager mCallbackManager;
+    private Drawable mProfilePic;
+    private NavigationDrawerFragment mNavDrawer;
 
     public CommunicationHandler communicationHandler;
     private static JSONObject alerts;
@@ -65,10 +69,11 @@ public class Helpers {
     private Helpers() {
         try {
             alerts = new JSONObject() //TODO
-                    .put("0", new JSONObject().put("title", "").put("message", "").put("cancel", ""))
+                    .put( "0" , new JSONObject().put("title", "").put("message", "").put("cancel", ""))
                     .put("-1", new JSONObject().put("title", "").put("message", "").put("cancel", ""))
-                    .put("-2", new JSONObject().put("title", "").put("message", "").put("cancel", ""))
-                    .put("-3", new JSONObject().put("title", "").put("message", "").put("cancel", ""))
+                    .put("-2" , new JSONObject().put("title", "").put("message", "").put("cancel", ""))
+                    .put("-3" , new JSONObject().put("title", "").put("message", "").put("cancel", ""))
+                    .put("-10", new JSONObject().put("title","Errore").put("message","Impossibile scaricare la foto profile").put("cancel","Ok"))
                     .put("1", new JSONObject().put("title", "").put("message", "").put("cancel", ""));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -346,7 +351,7 @@ public class Helpers {
                                         e.printStackTrace();
                                     }
 
-                                    user = new User(user.getId(),
+                                    user = new User( user!=null?user.getId():-1,
                                         false,
                                         new UserData(
                                                 Profile.getCurrentProfile().getFirstName(),
@@ -399,4 +404,20 @@ public class Helpers {
         //TODO
     }
 
+    public void setProfilePic( Drawable pic ) {
+        mProfilePic = pic;
+    }
+
+    public Drawable getProfilePic() {
+        return mProfilePic;
+    }
+
+    public void setNavigationDrawer(NavigationDrawerFragment fragment) {
+        this.mNavDrawer = fragment;
+    }
+
+    public NavigationDrawerFragment getNavigationDrawer(){
+        return this.mNavDrawer;
+    }
 }
+

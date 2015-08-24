@@ -1,6 +1,9 @@
 package it.suggestme.ui.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,11 +14,15 @@ import android.widget.TextView;
 import java.util.List;
 
 import it.suggestme.R;
+import it.suggestme.model.HamburgerItem;
 
-public class HamburgerAdapter extends ArrayAdapter<String> {
+public class HamburgerAdapter extends ArrayAdapter<HamburgerItem> {
 
-    public HamburgerAdapter(Context context, int resource, List<String> items) {
+    private Context context;
+
+    public HamburgerAdapter(Context context, int resource, List<HamburgerItem> items) {
         super(context, resource, items);
+        this.context = context;
     }
 
     @Override
@@ -27,11 +34,13 @@ public class HamburgerAdapter extends ArrayAdapter<String> {
             theView = li.inflate(R.layout.list_selected_row, null);
         }
 
-        String pos = getItem(position);
+        HamburgerItem pos = getItem(position);
         if(pos != null) {
             ImageView imview = (ImageView) theView.findViewById(R.id.ham_element_icon);
             TextView hamtext = (TextView)  theView.findViewById(R.id.ham_element_text);
-            hamtext.setText(pos);
+            hamtext.setText(pos.getTitle());
+
+            imview.setBackground(ContextCompat.getDrawable(getContext(), pos.getIcon()));
         }
         return theView;
     }
