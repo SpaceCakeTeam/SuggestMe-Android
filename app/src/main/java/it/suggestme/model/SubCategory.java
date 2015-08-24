@@ -3,6 +3,8 @@ package it.suggestme.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class SubCategory {
 
     private int id;
@@ -31,4 +33,18 @@ public class SubCategory {
             return null;
         }
     }
+
+  /*  public static String getSubCategoryNameFromID( int subcatid, ArrayList<SubCategory> subcatList ) {
+
+        if( subcatList == null )
+            throw new NullPointerException();
+
+        for( SubCategory aSubCat : subcatList ) {
+            if( aSubCat.getId() == subcatid ) {
+                return aSubCat.getName();
+            }
+        }
+        return "";
+    }
+    */
 }

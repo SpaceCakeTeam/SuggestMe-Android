@@ -1,6 +1,7 @@
 package it.suggestme.controller;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -97,6 +98,8 @@ public class CommunicationHandler {
                 Helpers.shared().removeSpinner();
                 if (response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
+                    Log.i(Helpers.getString(R.string.loginfo), responseData.toString());
+
                     Helpers.shared().getUser().setId(responseData.optInt("userid"));
                     categoryRequest(new RequestCallback() {
                         @Override
@@ -121,6 +124,8 @@ public class CommunicationHandler {
             public void callback(JSONObject response) {
                 if (response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
+                    Log.i(Helpers.getString(R.string.loginfo), responseData.toString());
+
                     JSONArray responseCategories = responseData.optJSONArray("categories");
                     try {
                         ArrayList<Category> categories = Parser.generateCategories(new JSONObject().put("categorieslist", responseCategories));
@@ -146,6 +151,8 @@ public class CommunicationHandler {
                 Helpers.shared().removeSpinner();
                 if (response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
+                    Log.i(Helpers.getString(R.string.loginfo), responseData.toString());
+
                     Question question = new Question(responseData.optInt("questionid"),questionData,responseData.optInt("timestamp"),null);
                     Helpers.shared().getQuestions().add(question);
                     Helpers.shared().saveObj("questions", Parser.parseQuestions(Helpers.shared().getQuestions()));
@@ -164,6 +171,8 @@ public class CommunicationHandler {
             public void callback(JSONObject response) {
                 if (response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
+                    Log.i(Helpers.getString(R.string.loginfo), responseData.toString());
+
                     JSONArray responseSuggests = responseData.optJSONArray("suggests");
                     for (Question question:Helpers.shared().getQuestions()) {
                         for (int i=0;i<responseSuggests.length();i++) {

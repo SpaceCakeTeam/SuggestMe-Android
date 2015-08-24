@@ -27,49 +27,21 @@ public class SceltaCategorieFragment extends Fragment {
         ImageButton mSocialButton = (ImageButton) rootView.findViewById(R.id.social_imgbtn);
         ImageButton mGoodsButton  = (ImageButton) rootView.findViewById(R.id.goods_imgbn);
 
-        mSocialButton.setOnTouchListener(new View.OnTouchListener() {
+
+        mSocialButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                ImageButton view;
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        view = (ImageButton) v;
-                        view.getBackground().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
-                        v.invalidate();
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        getFragmentManager().beginTransaction().replace(R.id.container, ChatFragment.newInstance(ChatFragment.SOCIAL)).commit();
-                        view = (ImageButton) v;
-                        view.getBackground().clearColorFilter();
-                        view.invalidate();
-                        return true;
-                    default:
-                        return false;
-                }
+            public void onClick(View v) {
+                getFragmentManager().beginTransaction().replace(R.id.container, ChatFragment.newInstance(ChatFragment.SOCIAL)).commit();
             }
         });
 
-        mGoodsButton.setOnTouchListener(new View.OnTouchListener() {
+        mGoodsButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                ImageButton view;
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        view = (ImageButton) v;
-                        view.getBackground().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
-                        v.invalidate();
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        getFragmentManager().beginTransaction().replace(R.id.container, ChatFragment.newInstance(ChatFragment.GOODS)).commit();
-                        view = (ImageButton) v;
-                        view.getBackground().clearColorFilter();
-                        view.invalidate();
-                        return true;
-                    default:
-                        return false;
-                }
+            public void onClick(View v) {
+                getFragmentManager().beginTransaction().replace(R.id.container, ChatFragment.newInstance(ChatFragment.GOODS)).commit();
             }
         });
+
         return rootView;
     }
 

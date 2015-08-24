@@ -7,7 +7,7 @@
     <item name="palette_primary_light" type="color">#4F68A2</item>
     <item name="palette_black" type="color">#000000</item>
 
-    <color name="black_overlay">#66000000</color>
+    <color name="palette_black_overlay">#66000000</color>
     <color name="palette_white_transparent">#96FFFFFF</color>
 
 </resources>

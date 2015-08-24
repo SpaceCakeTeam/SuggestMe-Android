@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,8 +23,10 @@ import it.suggestme.R;
 import it.suggestme.controller.CommunicationHandler;
 import it.suggestme.controller.Helpers;
 import it.suggestme.model.Category;
+import it.suggestme.model.Question;
 import it.suggestme.model.QuestionData;
 import it.suggestme.model.SubCategory;
+import it.suggestme.model.Suggest;
 
 public class ChatFragment extends Fragment {
 
@@ -38,20 +41,26 @@ public class ChatFragment extends Fragment {
     private TextView mQuestionText;
     private TextView  mSuggestText;
 
-    private String questionBody;
+    private String mQuestionBody;
+    private String mSuggestBody;
     private int categoryId;
     private int subcategoryId;
     private Boolean anonflag;
+
+    private Boolean fixedAnon;
 
     public static ChatFragment newInstance(String category) {
         ChatFragment fragment = new ChatFragment();
         Bundle args = new Bundle();
         args.putString(CATEGORY, category);
         fragment.setArguments(args);
+
         return fragment;
     }
 
-    public ChatFragment() {}
+    public ChatFragment() {
+        this.fixedAnon = false;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +78,21 @@ public class ChatFragment extends Fragment {
         mAnonButton = (ImageButton)rootView.findViewById(R.id.anon_img);
         mQuestionText = (TextView)rootView.findViewById(R.id.question_cloud);
 
-        setAnonFlag(true);
+        if( mQuestionBody == null || mQuestionBody.isEmpty() )
+            setAnonFlag(true);
+
+        if( mQuestionBody != null && !mQuestionBody.isEmpty() ) {
+            setAnonFlag(this.anonflag);
+            mQuestionText.setText(mQuestionBody);
+            mQuestionText.setVisibility(View.VISIBLE);
+            mQuestionEditor.setVisibility(View.GONE);
+        }
+
+        if( mSuggestBody != null && !mSuggestBody.isEmpty() ) {
+            mSuggestText = (TextView)rootView.findViewById(R.id.suggest_cloud);
+            mSuggestText.setVisibility(View.VISIBLE);
+            mSuggestText.setText(mSuggestBody);
+        }
 
         if(this.category.equals(SOCIAL))
             rootView.setBackground(getResources().getDrawable(R.drawable.form_social_background));
@@ -81,7 +104,8 @@ public class ChatFragment extends Fragment {
         mAnonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setAnonFlag(!anonflag);
+                if (!fixedAnon)
+                    setAnonFlag(!anonflag);
             }
         });
 
@@ -122,20 +146,20 @@ public class ChatFragment extends Fragment {
     }
 
     private void sendQuestion() {
-        this.questionBody = mQuestionEditor.getText().toString();
-        if(this.questionBody.equals(""))
+        this.mQuestionBody = mQuestionEditor.getText().toString();
+        if(this.mQuestionBody.equals(""))
             return;
 
         this.subcategoryId = retrieveSelectedSubcategoryID();
 
-        QuestionData questionData = new QuestionData(categoryId, subcategoryId, questionBody, anonflag);
+        QuestionData questionData = new QuestionData(categoryId, subcategoryId, mQuestionBody, anonflag);
 
         Helpers.shared().communicationHandler.askSuggestionRequest(questionData, new CommunicationHandler.RequestCallback() {
             @Override
             public void callback(Boolean success) {
                 if (success) {
                     mQuestionText.setVisibility(View.VISIBLE);
-                    mQuestionText.setText(questionBody);
+                    mQuestionText.setText(mQuestionBody);
 
                     mQuestionEditor.setText("");
                     mQuestionEditor.clearFocus();
@@ -162,11 +186,23 @@ public class ChatFragment extends Fragment {
     }
 
     private void setAnonFlag( Boolean set ) {
+
         anonflag = set;
         if(!anonflag)
             mAnonButton.setBackground(getResources().getDrawable(R.drawable.ic_logged));
         else
             mAnonButton.setBackground(getResources().getDrawable(R.drawable.ic_anonymous));
+    }
+
+    public void setQuestionToShow(Question theQuest) {
+        this.mQuestionBody = theQuest.getQuestionData().getText();
+        this.anonflag = theQuest.getQuestionData().getAnon();
+
+        if( theQuest.getSuggest() != null ) {
+            this.mSuggestBody = theQuest.getSuggest().getText();
+        }
+
+        this.fixedAnon = true;
     }
 
     @Override

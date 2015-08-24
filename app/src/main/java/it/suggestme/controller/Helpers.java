@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -14,9 +15,11 @@ import org.json.JSONTokener;
 
 import java.util.ArrayList;
 
+import it.suggestme.R;
 import it.suggestme.model.Category;
 import it.suggestme.model.Question;
 
+import it.suggestme.model.SubCategory;
 import it.suggestme.model.User;
 import it.suggestme.model.UserData;
 
@@ -174,6 +177,9 @@ public class Helpers {
     }
 
     public ArrayList<Category> getCategories() {
+
+        if( categories == null )
+            setCategories(Parser.generateCategories(getSavedObj("categories")));
         return categories;
     }
 
@@ -181,7 +187,56 @@ public class Helpers {
         categories = newcategories;
     }
 
+    public Category getCategoryFromID( int catid ) {
+
+        for( Category aCat : categories ) {
+            if ( aCat.getId() == catid ) {
+                return aCat;
+            }
+        }
+
+        return null;
+    }
+
+    public ArrayList<SubCategory> getSubCategoriesFromCategoryID( int categoryId ) {
+
+        for( Category aCat : categories ) {
+            if( aCat.getId() == categoryId ) {
+                return aCat.getSubCategories();
+            }
+        }
+        return null;
+    }
+
+    public SubCategory getSubcategoryFromID( int catId, int subcatId ) {
+
+        if( this.getCategoryFromID(catId) == null ){
+
+            Log.i(getString(R.string.loginfo), "CATEGORY FROM ID IS NULL. Given CAT ID: "
+                    .concat(((Integer) catId).toString())
+                    .concat("Given SUBCAT ID: ")
+                    .concat(((Integer) subcatId).toString()));
+
+            return null;
+        }
+
+        for (SubCategory aSubCat : this.getCategoryFromID(catId).getSubCategories()) {
+            if (aSubCat.getId() == subcatId) {
+                return aSubCat;
+            }
+        }
+        Log.i(getString(R.string.loginfo),"SUBCATEGORY NOT FOUND ID. Given CAT ID: "
+                .concat(((Integer)catId).toString())
+                .concat("Given SUBCAT ID: ")
+                .concat(((Integer) subcatId).toString()));
+        return null;
+    }
+
     public ArrayList<Question> getQuestions() {
+
+        if( questions == null )
+            questions = Parser.generateQuestions(getSavedObj("questions"));
+
         return questions;
     }
 
