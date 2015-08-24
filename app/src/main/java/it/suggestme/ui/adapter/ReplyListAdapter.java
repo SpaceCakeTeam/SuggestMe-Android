@@ -1,5 +1,6 @@
 package it.suggestme.ui.adapter;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,10 +44,13 @@ public class ReplyListAdapter extends ArrayAdapter<ReplyListItem> {
             final ImageView replied  = (ImageView) theView.findViewById(R.id.list_row_replied);
 
 
-            if( Helpers.shared().getCategoryFromID(item.getQuestionData().getCatId()).getName().toLowerCase().equals(ChatFragment.SOCIAL) )
+            if( Helpers.shared().getCategoryFromID(item.getQuestionData().getCatId()).getName().toLowerCase().equals(ChatFragment.SOCIAL) ) {
                 caticon.setBackground(getContext().getResources().getDrawable(R.drawable.ic_questionlist_social));
-            else
+                caticon.setTranslationX(15);
+
+            } else {
                 caticon.setBackground(getContext().getResources().getDrawable(R.drawable.ic_questionlist_goods));
+            }
 
             sCatName.setText(
                     Helpers.shared().getSubcategoryFromID(

@@ -46,7 +46,7 @@ public class UserData {
             return new JSONObject()
                     .put("name",name)
                     .put("surname",surname)
-                    .put("birthdate",birthdate)
+                    .put("birth_date",birthdate)
                     .put("gender",gender)
                     .put("email",email);
         } catch (JSONException e) {

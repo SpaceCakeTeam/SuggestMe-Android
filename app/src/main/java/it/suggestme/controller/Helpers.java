@@ -1,10 +1,14 @@
 package it.suggestme.controller;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -13,7 +17,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
+import com.facebook.internal.CollectionMapper;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 
 import it.suggestme.R;
 import it.suggestme.model.Category;
@@ -25,6 +45,8 @@ import it.suggestme.model.UserData;
 
 public class Helpers {
 
+    public interface HelperCallback{ void callback(Boolean success); }
+
     private static Helpers mInstance;
 
     private static Context ctx;
@@ -35,6 +57,7 @@ public class Helpers {
     private ArrayList<Category> categories;
     private ArrayList<Question> questions;
     private Question currentQuestion;
+    private CallbackManager mCallbackManager;
 
     public CommunicationHandler communicationHandler;
     private static JSONObject alerts;
@@ -50,9 +73,14 @@ public class Helpers {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         communicationHandler = new CommunicationHandler();
     }
 
+    public void initFBSdk(){
+        FacebookSdk.sdkInitialize(Helpers.shared().getCtx());
+        mCallbackManager = CallbackManager.Factory.create();
+    }
     public static Helpers shared() {
         if (mInstance == null)
             mInstance = new Helpers();
@@ -102,6 +130,14 @@ public class Helpers {
 
     public static AlertDialog showAlert(int id) {
         JSONObject alert = alerts.optJSONObject(id + "");
+        if( alert == null ) {
+            try {
+                alert = new JSONObject().put("title", "Impossibile collegarsi al server").put("message", "Ritenta più tardi").put("cancel", "Ok");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         return new AlertDialog.Builder(ctx).setTitle(alert.optString("title")).setMessage(alert.optString("message")).show();
     }
 
@@ -259,11 +295,108 @@ public class Helpers {
         return true;
     }
 
-    public void getFacebookAccount() {
-        //TODO
+    public CallbackManager getFBCallbackMng() {
+        return this.mCallbackManager;
+    }
+
+    public void getFacebookAccount( Fragment fragment, final HelperCallback hpCallback ) {
+
+        Log.i(getString(R.string.loginfo), "FB LOGIN REQUEST STARTING NOW");
+
+        LoginManager.getInstance().registerCallback(Helpers.shared().getFBCallbackMng(),
+            new FacebookCallback<LoginResult>() {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
+                    Log.i(getString(R.string.loginfo), "Success Login" + loginResult.toString());
+
+                    Profile userProfile = Profile.getCurrentProfile();
+                    Log.i(Helpers.getString(R.string.loginfo), "Name: " + userProfile.getName());
+
+                    GraphRequest request = GraphRequest.newMeRequest(
+                        loginResult.getAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+
+                                Log.i(Helpers.getString(R.string.loginfo), response.toString());
+
+                                UserData.Gender gender;
+
+                                try {
+
+                                    switch (response.getJSONObject().getString("gender")){
+                                        case "male":
+                                            gender = UserData.Gender.m;
+                                            break;
+                                        case "female":
+                                            gender = UserData.Gender.f;
+                                            break;
+                                        default:
+                                            gender = UserData.Gender.u;
+                                    }
+
+                                    String birthday = response.getJSONObject().getString("birthday").replace("\\","");
+                                    long lepoch;
+                                    int epoch = 0;
+                                    try {
+                                        Date theDate = new SimpleDateFormat("MM/dd/yyyy").parse(birthday);
+                                        lepoch = theDate.getTime() / 1000;
+                                        epoch = (int)lepoch;
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    user = new User(user.getId(),
+                                        false,
+                                        new UserData(
+                                                Profile.getCurrentProfile().getFirstName(),
+                                                Profile.getCurrentProfile().getLastName(),
+                                                epoch,
+                                                gender,
+                                                response.getJSONObject().getString("email")
+                                        ));
+
+                                    hpCallback.callback(true);
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    hpCallback.callback(false);
+                                }
+                            }
+                        });
+                    Bundle parameters = new Bundle();
+                    parameters.putString("fields", "id,name,email,gender, birthday");
+                    request.setParameters(parameters);
+                    request.executeAsync();
+
+                }
+
+                @Override
+                public void onCancel() {
+                    // App code
+                    Log.i(getString(R.string.loginfo), "FB CANCELLED");
+                }
+
+                @Override
+                public void onError(FacebookException exception) {
+                    // App code
+                    Log.i(getString(R.string.loginfo), "FB ERROR");
+
+                }
+            });
+
+        ArrayList<String> fbperm = new ArrayList<String>();
+        fbperm.add("public_profile");
+        fbperm.add("email");
+        fbperm.add("user_birthday");
+
+
+        LoginManager.getInstance().logInWithReadPermissions(fragment, fbperm);
+        Log.i(getString(R.string.loginfo), "REQUEST SENT");
     }
 
     public void getTwitterAccount() {
         //TODO
     }
+
 }

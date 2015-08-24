@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.facebook.appevents.AppEventsLogger;
+
 import it.suggestme.R;
 import it.suggestme.controller.Helpers;
 
@@ -17,6 +19,7 @@ public class SplashScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         Helpers.shared().setCtx(this);
+        Helpers.shared().initFBSdk();
         setContentView(R.layout.activity_splash_screen);
 
         new Handler().postDelayed(new Runnable() {
@@ -29,5 +32,18 @@ public class SplashScreenActivity extends Activity {
                 }
             }
         }, SPLASH_TIMER);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AppEventsLogger.activateApp(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AppEventsLogger.deactivateApp(this);
     }
 }

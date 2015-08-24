@@ -90,12 +90,14 @@ public class CommunicationHandler {
         }
     }
 
-    public void registrationRequest(final RequestCallback requestCallback) {
+    public void registrationRequest( final RequestCallback requestCallback, JSONObject userData ) {
         Helpers.shared().setSpinner();
-        new ServiceRequest(Helpers.getString(R.string.registration_uri), new JSONObject(), new ServiceCallback() {
+        new ServiceRequest(Helpers.getString(R.string.registration_uri), userData, new ServiceCallback() {
             @Override
             public void callback(JSONObject response) {
                 Helpers.shared().removeSpinner();
+                Log.i(Helpers.getString(R.string.loginfo), response.toString());
+
                 if (response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
                     Log.i(Helpers.getString(R.string.loginfo), responseData.toString());

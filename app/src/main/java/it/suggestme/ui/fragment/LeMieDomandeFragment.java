@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 
@@ -25,6 +27,8 @@ public class LeMieDomandeFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private ListView mQuestionList;
+    private ArrayList<Question> mQuestion;
+    private ArrayList<ReplyListItem> mReplied;
 
     public static LeMieDomandeFragment newInstance() {
         return new LeMieDomandeFragment();
@@ -42,34 +46,27 @@ public class LeMieDomandeFragment extends Fragment {
 
         Helpers.shared().setDataUser();
 
-        if (Helpers.shared().getQuestions() != null && Helpers.shared().getQuestions().size() > 0) {
-            Helpers.shared().communicationHandler.getSuggestsRequest(new JSONArray(), new CommunicationHandler.RequestCallback() {
-                @Override
-                public void callback(Boolean success) {
-
-                }
-            });
-        }
-
         View rootView = inflater.inflate(R.layout.fragment_le_mie_domande, container, false);
         mQuestionList = (ListView) rootView.findViewById(R.id.question_list);
 
-        ArrayList<Question>      mQuestion = Helpers.shared().getQuestions();
-        ArrayList<ReplyListItem> mReplied  = new ArrayList<>();
+        mQuestion = Helpers.shared().getQuestions();
+        mReplied  = new ArrayList<>();
 
         Boolean replied;
         String categoryName;
         String subCategoryName;
 
-        JSONArray unrepliedQuestion = new JSONArray();
+        final JSONArray unrepliedQuestion = new JSONArray();
 
         for( Question aQuest : mQuestion ) {
 
             replied = aQuest.getSuggest() != null;
 
-            if( !replied )
-                unrepliedQuestion.put(aQuest.getId());
+            if( !replied ) {
+                Log.i(Helpers.getString(R.string.loginfo), "Question: ".concat(((Integer) aQuest.getId()).toString()).concat(" REPLIED: ").concat(replied.toString()));
 
+                unrepliedQuestion.put(aQuest.getId());
+            }
             categoryName = Helpers.shared().getCategoryFromID(aQuest.getQuestionData().getCatId()).getName();
             subCategoryName = Helpers.shared().getSubcategoryFromID(
                     aQuest.getQuestionData().getCatId(),
@@ -78,18 +75,15 @@ public class LeMieDomandeFragment extends Fragment {
 
             mReplied.add(new ReplyListItem(
                     aQuest,
-                    aQuest.getSuggest()!=null   ?
-                            aQuest.getSuggest() :
-                            null,
                     categoryName,
                     subCategoryName,
-                    replied ));
+                    replied));
         }
 
         mQuestionList.setAdapter(new ReplyListAdapter(
-                getActivity().getApplicationContext(),
-                R.layout.le_mie_domande_list_item,
-                mReplied ));
+            getActivity().getApplicationContext(),
+            R.layout.le_mie_domande_list_item,
+            mReplied ));
 
         mQuestionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -106,6 +100,35 @@ public class LeMieDomandeFragment extends Fragment {
             }
         });
 
+
+        if (Helpers.shared().getQuestions() != null && Helpers.shared().getQuestions().size() > 0) {
+            Helpers.shared().communicationHandler.getSuggestsRequest(unrepliedQuestion, new CommunicationHandler.RequestCallback() {
+                @Override
+                public void callback(Boolean success) {
+
+                    if( !success )
+                        return;
+
+                    mQuestion = Helpers.shared().getQuestions();
+
+                    for( int i = 0; i < unrepliedQuestion.length(); i++ ){
+
+                        for( ReplyListItem rli : mReplied ) {
+                            if( rli.getHasBeenReplied() )
+                                continue;
+
+                            try {
+                                if( rli.getQuestion().getId() == (int)unrepliedQuestion.get(i) ){
+                                    rli.updateReplied();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            });
+        }
         return rootView;
     }
 
