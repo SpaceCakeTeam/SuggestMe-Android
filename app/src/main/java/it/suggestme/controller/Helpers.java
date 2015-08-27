@@ -1,9 +1,7 @@
 package it.suggestme.controller;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -21,9 +19,8 @@ import org.json.JSONTokener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
+import java.util.Locale;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -32,11 +29,20 @@ import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.Profile;
-import com.facebook.internal.CollectionMapper;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
+import io.fabric.sdk.android.Fabric;
 import it.suggestme.R;
+
+import it.suggestme.controller.interfaces.HelperCallback;
 import it.suggestme.model.Category;
 import it.suggestme.model.Question;
 
@@ -47,24 +53,34 @@ import it.suggestme.ui.fragment.NavigationDrawerFragment;
 
 public class Helpers {
 
-    public interface HelperCallback{ void callback(Boolean success); }
+    private static final String FILENAME = "preferencesfile";
+    private static JSONObject alerts;
+
+    public  static final int ANON     = 0;
+    public  static final int FACEBOOK = 1;
+    public  static final int TWITTER  = 2;
+    private static       int LOGGEDWITH;
+    private static final String LOGGEDWTHLBL = "loggedwith";
+
+    public static final String USERLBL = "user";
 
     private static Helpers mInstance;
-
     private static Context ctx;
 
-    private final static String filename = "preferencesfile";
-
-    private User user;
-    private ArrayList<Category> categories;
-    private ArrayList<Question> questions;
-    private Question currentQuestion;
-    private CallbackManager mCallbackManager;
     private Drawable mProfilePic;
     private NavigationDrawerFragment mNavDrawer;
+    public  CommunicationHandler communicationHandler;
+    private User mAppUser;
+    private ArrayList<Category> categories;
+    private ArrayList<Question> questions;
 
-    public CommunicationHandler communicationHandler;
-    private static JSONObject alerts;
+    // Social
+    private CallbackManager mCallbackManager;
+    private TwitterAuthClient mTwitterAuthClient;
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "glpdt59RhM0EKwvfAhxqK6N3G";
+    private static final String TWITTER_SECRET = "4CnJSG24WAb6KOgrX2h2aD757rua1mkkYRATlC9G4IrGASnsSk";
+
 
     private Helpers() {
         try {
@@ -79,17 +95,36 @@ public class Helpers {
             e.printStackTrace();
         }
 
+        LOGGEDWITH = -1;
         communicationHandler = new CommunicationHandler();
+    }
+
+    public static Helpers shared() {
+        if (mInstance == null)
+            mInstance = new Helpers();
+        return mInstance;
+    }
+
+    public void setLoggedWith(int what){
+        saveInt(LOGGEDWTHLBL,what);
+        LOGGEDWITH = what;
+    }
+
+    public int getLoggedWith(){
+        if( LOGGEDWITH == -1)
+            LOGGEDWITH = getSavedInt(LOGGEDWTHLBL);
+        return LOGGEDWITH;
     }
 
     public void initFBSdk(){
         FacebookSdk.sdkInitialize(Helpers.shared().getCtx());
         mCallbackManager = CallbackManager.Factory.create();
     }
-    public static Helpers shared() {
-        if (mInstance == null)
-            mInstance = new Helpers();
-        return mInstance;
+
+    public void initFabric(){
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(ctx, new Twitter(authConfig));
+        mTwitterAuthClient = new TwitterAuthClient();
     }
 
     public void setCtx(Context currCtx) {
@@ -155,66 +190,67 @@ public class Helpers {
     }
 
     public boolean keyExist(String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
+        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         return sp.contains(key);
     }
 
     public void saveObj(String key, JSONObject obj) {
-        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
+        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, obj.toString());
         editor.apply();
     }
 
     public JSONObject getSavedObj(String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
+        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         if(!keyExist(key))
             return null;
         try {
             return (JSONObject) new JSONTokener(sp.getString(key,null)).nextValue();
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.i(getString(R.string.loginfo),"Error loading saved object "+e.toString());
             return null;
         }
     }
 
     public void saveString(String key, String text) {
-        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
+        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, text);
         editor.apply();
     }
 
     public String getSavedString(String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
+        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         if(!keyExist(key))
             return null;
         return sp.getString(key, null);
     }
 
     public void saveInt(String key, int val) {
-        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
+        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt(key, val);
         editor.apply();
     }
 
     public int getSavedInt(String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
+        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         if(!keyExist(key))
             return -1;
         return sp.getInt(key, -1);
     }
 
     public void removePreference(String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(filename, Context.MODE_PRIVATE);
+        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.remove(key);
         editor.apply();
     }
 
-    public User getUser() {
-        return user;
+    public User getAppUser() {
+        return mAppUser;
     }
 
     public ArrayList<Category> getCategories() {
@@ -253,7 +289,7 @@ public class Helpers {
 
         if( this.getCategoryFromID(catId) == null ){
 
-            Log.i(getString(R.string.loginfo), "CATEGORY FROM ID IS NULL. Given CAT ID: "
+            Log.e(getString(R.string.loginfo), "CATEGORY FROM ID IS NULL. Given CAT ID: "
                     .concat(((Integer) catId).toString())
                     .concat("Given SUBCAT ID: ")
                     .concat(((Integer) subcatId).toString()));
@@ -266,7 +302,7 @@ public class Helpers {
                 return aSubCat;
             }
         }
-        Log.i(getString(R.string.loginfo),"SUBCATEGORY NOT FOUND ID. Given CAT ID: "
+        Log.e(getString(R.string.logerror),"SUBCATEGORY NOT FOUND ID. Given CAT ID: "
                 .concat(((Integer)catId).toString())
                 .concat("Given SUBCAT ID: ")
                 .concat(((Integer) subcatId).toString()));
@@ -282,15 +318,15 @@ public class Helpers {
     }
 
     public boolean setDataUser(){
-        if (keyExist("user")) {
-            user = Parser.generateUser(getSavedObj("user"));
+        if (keyExist(USERLBL)) {
+            mAppUser = Parser.generateUser(getSavedObj(USERLBL));
             categories = Parser.generateCategories(getSavedObj("categories"));
             if (keyExist("questions"))
                 questions = Parser.generateQuestions(getSavedObj("questions"));
             else questions = new ArrayList<>();
             return true;
         } else {
-            user = new User(-1, true, new UserData("","",0, UserData.Gender.u,""));
+            mAppUser = new User(-1, true, new UserData("","",0, UserData.Gender.u,""));
             return false;
         }
     }
@@ -304,26 +340,20 @@ public class Helpers {
         return this.mCallbackManager;
     }
 
-    public void getFacebookAccount( Fragment fragment, final HelperCallback hpCallback ) {
-
-        Log.i(getString(R.string.loginfo), "FB LOGIN REQUEST STARTING NOW");
+    public void performFacebookLogin(Fragment fragment, final HelperCallback hpCallback) {
 
         LoginManager.getInstance().registerCallback(Helpers.shared().getFBCallbackMng(),
             new FacebookCallback<LoginResult>() {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
-                    Log.i(getString(R.string.loginfo), "Success Login" + loginResult.toString());
 
                     Profile userProfile = Profile.getCurrentProfile();
-                    Log.i(Helpers.getString(R.string.loginfo), "Name: " + userProfile.getName());
 
                     GraphRequest request = GraphRequest.newMeRequest(
                         loginResult.getAccessToken(),
                         new GraphRequest.GraphJSONObjectCallback() {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
-
-                                Log.i(Helpers.getString(R.string.loginfo), response.toString());
 
                                 UserData.Gender gender;
 
@@ -344,14 +374,14 @@ public class Helpers {
                                     long lepoch;
                                     int epoch = 0;
                                     try {
-                                        Date theDate = new SimpleDateFormat("MM/dd/yyyy").parse(birthday);
+                                        Date theDate = new SimpleDateFormat("MM/dd/yyyy", Locale.ITALIAN).parse(birthday);
                                         lepoch = theDate.getTime() / 1000;
                                         epoch = (int)lepoch;
                                     } catch (ParseException e) {
                                         e.printStackTrace();
                                     }
 
-                                    user = new User( user!=null?user.getId():-1,
+                                    mAppUser = new User( mAppUser !=null? mAppUser.getId():-1,
                                         false,
                                         new UserData(
                                                 Profile.getCurrentProfile().getFirstName(),
@@ -361,6 +391,7 @@ public class Helpers {
                                                 response.getJSONObject().getString("email")
                                         ));
 
+                                    setLoggedWith(FACEBOOK);
                                     hpCallback.callback(true);
 
                                 } catch (JSONException e) {
@@ -378,15 +409,12 @@ public class Helpers {
 
                 @Override
                 public void onCancel() {
-                    // App code
-                    Log.i(getString(R.string.loginfo), "FB CANCELLED");
+                    hpCallback.callback(false);
                 }
 
                 @Override
                 public void onError(FacebookException exception) {
-                    // App code
-                    Log.i(getString(R.string.loginfo), "FB ERROR");
-
+                    hpCallback.callback(false);
                 }
             });
 
@@ -397,11 +425,39 @@ public class Helpers {
 
 
         LoginManager.getInstance().logInWithReadPermissions(fragment, fbperm);
-        Log.i(getString(R.string.loginfo), "REQUEST SENT");
     }
 
-    public void getTwitterAccount() {
-        //TODO
+    public TwitterAuthClient getTwitterClient(){
+        return this.mTwitterAuthClient;
+    }
+
+    public void performTwitterLogin(final Fragment fragment, final HelperCallback hpCallback) {
+        mTwitterAuthClient.authorize(fragment.getActivity(), new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> twitterSessionResult) {
+                TwitterSession session = Twitter.getSessionManager().getActiveSession();
+
+                String uname = session.getUserName();
+                String lname = "(Twitter)";
+
+                mAppUser = new User( mAppUser!=null?mAppUser.getId():-1,
+                        false,
+                        new UserData(
+                                uname,
+                                lname,
+                                0,
+                                UserData.Gender.u,
+                                ""
+                        ));
+                setLoggedWith(TWITTER);
+                hpCallback.callback(true);
+            }
+
+            @Override
+            public void failure(TwitterException e) {
+                hpCallback.callback(false);
+            }
+        } );
     }
 
     public void setProfilePic( Drawable pic ) {
@@ -419,5 +475,5 @@ public class Helpers {
     public NavigationDrawerFragment getNavigationDrawer(){
         return this.mNavDrawer;
     }
-}
 
+}

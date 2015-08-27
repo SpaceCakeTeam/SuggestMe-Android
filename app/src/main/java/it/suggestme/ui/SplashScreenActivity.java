@@ -12,6 +12,7 @@ import it.suggestme.controller.Helpers;
 
 public class SplashScreenActivity extends Activity {
 
+
     private static final int SPLASH_TIMER = 1000;
 
     @Override
@@ -20,6 +21,9 @@ public class SplashScreenActivity extends Activity {
 
         Helpers.shared().setCtx(this);
         Helpers.shared().initFBSdk();
+        Helpers.shared().initFabric();
+        Helpers.shared().getAppUser();
+
         setContentView(R.layout.activity_splash_screen);
 
         new Handler().postDelayed(new Runnable() {

@@ -17,7 +17,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 
 import it.suggestme.R;
-import it.suggestme.controller.CommunicationHandler;
+import it.suggestme.controller.interfaces.RequestCallback;
 import it.suggestme.controller.Helpers;
 import it.suggestme.model.Question;
 import it.suggestme.model.ReplyListItem;
@@ -64,7 +64,6 @@ public class LeMieDomandeFragment extends Fragment {
 
             if( !replied ) {
                 Log.i(Helpers.getString(R.string.loginfo), "Question: ".concat(((Integer) aQuest.getId()).toString()).concat(" REPLIED: ").concat(replied.toString()));
-
                 unrepliedQuestion.put(aQuest.getId());
             }
             categoryName = Helpers.shared().getCategoryFromID(aQuest.getQuestionData().getCatId()).getName();
@@ -102,7 +101,7 @@ public class LeMieDomandeFragment extends Fragment {
 
 
         if (Helpers.shared().getQuestions() != null && Helpers.shared().getQuestions().size() > 0) {
-            Helpers.shared().communicationHandler.getSuggestsRequest(unrepliedQuestion, new CommunicationHandler.RequestCallback() {
+            Helpers.shared().communicationHandler.getSuggestsRequest(unrepliedQuestion, new RequestCallback() {
                 @Override
                 public void callback(Boolean success) {
 

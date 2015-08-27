@@ -1,8 +1,6 @@
 package it.suggestme.ui.fragment;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -10,7 +8,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -28,15 +25,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.Profile;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.models.User;
 
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import it.suggestme.R;
-import it.suggestme.controller.CommunicationHandler;
+import it.suggestme.controller.interfaces.RequestCallback;
 import it.suggestme.controller.Helpers;
 import it.suggestme.model.HamburgerItem;
 import it.suggestme.ui.adapter.HamburgerAdapter;
@@ -50,7 +49,6 @@ public class NavigationDrawerFragment extends Fragment {
 
     private DrawerLayout mDrawerLayout;
     private ListView mMainDrawerListView;
-    private ListView mSecondaryDrawerListView;
     private View mFragmentContainerView;
     private View mRootView;
 
@@ -86,11 +84,11 @@ public class NavigationDrawerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_navigation_drawer,container);
 
-        Log.i(Helpers.getString(R.string.loginfo),Helpers.shared().getUser().getUserData().getName());
+        if( Helpers.shared().getLoggedWith() == Helpers.FACEBOOK )
+            updateProfilePicFromFacebook();
 
-        String name = Helpers.shared().getUser().getUserData().getName();
-
-        updateProfilePic();
+        if( Helpers.shared().getLoggedWith() == Helpers.TWITTER )
+            updateProfilePicFromTwitter();
 
         mMainDrawerListView = (ListView) mRootView.findViewById(R.id.HamburgerList_main);
         mMainDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -188,27 +186,63 @@ public class NavigationDrawerFragment extends Fragment {
         }
     }
 
-    public void updateProfilePic(){
+    public void updateProfilePicFromFacebook(){
 
-        if( Helpers.shared().getUser().getUserData().getName() != null && Helpers.shared().getUser().getUserData().getName() != "" && Helpers.shared().getUser().getUserData().getName().length() > 0 ) {
+        if( Helpers.shared().getAppUser().getUserData().getName() != null &&
+                Helpers.shared().getAppUser().getUserData().getName() != "" &&
+                Helpers.shared().getAppUser().getUserData().getName().length() > 0 ) {
 
             TextView mUserNameTextView = (TextView) mRootView.findViewById(R.id.ham_head_userName);
             final ImageView mAvatar = (ImageView) mRootView.findViewById(R.id.ham_head_avatar);
 
-            mUserNameTextView.setText(Helpers.shared().getUser().getUserData().getName() + " " + Helpers.shared().getUser().getUserData().getSurname());
-
-            Log.i(Helpers.getString(R.string.loginfo), Profile.getCurrentProfile().getProfilePictureUri(60, 60).toString());
+            mUserNameTextView.setText(Helpers.shared().getAppUser().getUserData().getName() + " " + Helpers.shared().getAppUser().getUserData().getSurname());
 
             Helpers.shared().communicationHandler.getProfilePicture(Profile.getCurrentProfile().getProfilePictureUri(60, 60).toString(),
-                    new CommunicationHandler.RequestCallback() {
+                    new RequestCallback() {
                         @Override
                         public void callback(Boolean success) {
-                            if( !success )
+                            if (!success)
                                 return;
 
                             mAvatar.setImageDrawable(Helpers.shared().getProfilePic());
                         }
                     });
+        }
+    }
+
+    public void updateProfilePicFromTwitter(){
+
+        if( Helpers.shared().getAppUser().getUserData().getName() != null &&
+                Helpers.shared().getAppUser().getUserData().getName() != "" &&
+                Helpers.shared().getAppUser().getUserData().getName().length() > 0 ) {
+
+            TextView mUserNameTextView = (TextView) mRootView.findViewById(R.id.ham_head_userName);
+            final ImageView mAvatar = (ImageView) mRootView.findViewById(R.id.ham_head_avatar);
+
+            mUserNameTextView.setText("@" + Helpers.shared().getAppUser().getUserData().getName());
+
+            Twitter.getApiClient().getAccountService().verifyCredentials(true, false, new Callback<User>() {
+                @Override
+                public void success(Result<User> result) {
+                    User user = result.data;
+
+                    Helpers.shared().communicationHandler.getProfilePicture(user.profileImageUrl,
+                        new RequestCallback() {
+                            @Override
+                            public void callback(Boolean success) {
+                                if (!success)
+                                    return;
+
+                                mAvatar.setImageDrawable(Helpers.shared().getProfilePic());
+                            }
+                        });
+                }
+
+                @Override
+                public void failure(TwitterException e) {
+                    // TODO
+                }
+            });
         }
     }
 

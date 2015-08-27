@@ -3,6 +3,7 @@ package it.suggestme.ui.tutorialpages;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +11,9 @@ import android.view.ViewGroup;
 import org.json.JSONObject;
 
 import it.suggestme.R;
-import it.suggestme.controller.CommunicationHandler;
 import it.suggestme.controller.Helpers;
+import it.suggestme.controller.interfaces.RequestCallback;
+import it.suggestme.controller.interfaces.HelperCallback;
 import it.suggestme.ui.SceltaCategorie;
 
 public class TutorialPageFragment extends Fragment {
@@ -60,13 +62,13 @@ public class TutorialPageFragment extends Fragment {
             rootView.findViewById(R.id.login_facebook_tutorial_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Helpers.shared().getFacebookAccount(TutorialPageFragment.this, new Helpers.HelperCallback() {
+                    Helpers.shared().performFacebookLogin(TutorialPageFragment.this, new HelperCallback() {
                         @Override
                         public void callback(Boolean success) {
-                            if( !success )
+                            if (!success)
                                 return;
 
-                            login(Helpers.shared().getUser().parse());
+                            login(Helpers.shared().getAppUser().parse());
                         }
                     });
                 }
@@ -75,8 +77,15 @@ public class TutorialPageFragment extends Fragment {
             rootView.findViewById(R.id.login_twitter_tutorial_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Helpers.shared().getTwitterAccount();
-                    login(Helpers.shared().getUser().parse());
+                    Helpers.shared().performTwitterLogin(TutorialPageFragment.this, new HelperCallback() {
+                        @Override
+                        public void callback(Boolean success) {
+                            if (!success) {
+                                return;
+                            }
+                            login(Helpers.shared().getAppUser().parse());
+                        }
+                    });
                 }
             });
 
@@ -93,7 +102,7 @@ public class TutorialPageFragment extends Fragment {
     }
 
     private void login( JSONObject userData ) {
-        Helpers.shared().communicationHandler.registrationRequest(new CommunicationHandler.RequestCallback() {
+        Helpers.shared().communicationHandler.registrationRequest(new RequestCallback() {
             @Override
             public void callback(Boolean success) {
                 if (success) {

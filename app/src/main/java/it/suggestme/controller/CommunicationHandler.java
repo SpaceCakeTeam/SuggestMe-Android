@@ -1,127 +1,28 @@
 package it.suggestme.controller;
 
-import android.app.Service;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
 import it.suggestme.R;
+
+import it.suggestme.controller.interfaces.ServiceRequest;
+import it.suggestme.controller.interfaces.RequestCallback;
+import it.suggestme.controller.services.ServiceCallback;
+import it.suggestme.controller.services.DrawableServiceRequest;
+
 import it.suggestme.model.Category;
 import it.suggestme.model.Question;
 import it.suggestme.model.QuestionData;
 import it.suggestme.model.Suggest;
-import it.suggestme.model.User;
 
 public class CommunicationHandler {
 
-    private interface ServiceCallback {void callback(JSONObject obj);}
-    public interface RequestCallback {void callback(Boolean success);}
-
     public CommunicationHandler() {}
-
-    private class ServiceRequest extends AsyncTask<Void,Void,JSONObject> {
-
-        private String requestUri;
-        private Object requestData;
-        private ServiceCallback serviceCallback;
-        private JSONObject requestDataWithIdAndSecret;
-
-        public ServiceRequest(String requestUri, Object requestData, ServiceCallback serviceCallback) {
-            this.requestUri = requestUri;
-            this.requestData = requestData;
-            this.serviceCallback = serviceCallback;
-        }
-
-        @Override
-        protected void onPreExecute(){
-            try {
-                User user = Helpers.shared().getUser();
-                requestDataWithIdAndSecret = new JSONObject()
-                        .put("userid", user.getId())
-                        .put("secret", Helpers.getString(R.string.secret));
-
-                if (requestUri.equalsIgnoreCase(Helpers.getString(R.string.registration_uri))) {
-                    requestDataWithIdAndSecret.put("anonflag", user.getAnon()).put("userdata", user.getUserData().parse());
-                } else {
-                    requestDataWithIdAndSecret.put("userdata", requestData);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected JSONObject doInBackground(Void... v) {
-            JSONObject response = new JSONObject();
-            try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(Helpers.getString(R.string.base_url)+requestUri).openConnection();
-                connection.setRequestMethod("POST");
-                OutputStream os = connection.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                writer.write(requestDataWithIdAndSecret.toString());
-                writer.flush();
-                writer.close();
-                os.close();
-                BufferedReader bfr = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String responseString = bfr.readLine();
-                response = (JSONObject) new JSONTokener(responseString).nextValue();
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-            }
-            return response;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject result) {
-            serviceCallback.callback(result);
-        }
-    }
-
-    private class ExternalServiceRequest extends AsyncTask<Void,Void,JSONObject> {
-
-        private String mRequestURL;
-        private ServiceCallback mCallback;
-
-        public ExternalServiceRequest(String url, ServiceCallback serviceCallback){
-            mRequestURL = url;
-            mCallback   = serviceCallback;
-        }
-
-        @Override
-        protected JSONObject doInBackground(Void... params) {
-            JSONObject response = new JSONObject();
-            try {
-                Drawable thumb_d = Drawable.createFromStream(new URL(mRequestURL).openStream(), "src");
-                Helpers.shared().setProfilePic(thumb_d);
-
-                response.put("status","ok");
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-                return null;
-            }
-            return response;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject result) {
-            mCallback.callback(result);
-        }
-    }
 
     public void registrationRequest( final RequestCallback requestCallback, JSONObject userData ) {
         Helpers.shared().setSpinner();
@@ -129,18 +30,17 @@ public class CommunicationHandler {
             @Override
             public void callback(JSONObject response) {
                 Helpers.shared().removeSpinner();
-                Log.i(Helpers.getString(R.string.loginfo), response.toString());
 
                 if (response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
                     Log.i(Helpers.getString(R.string.loginfo), responseData.toString());
 
-                    Helpers.shared().getUser().setId(responseData.optInt("userid"));
+                    Helpers.shared().getAppUser().setId(responseData.optInt("userid"));
                     categoryRequest(new RequestCallback() {
                         @Override
                         public void callback(Boolean success) {
                             if (success) {
-                                Helpers.shared().saveObj("user", Helpers.shared().getUser().parse());
+                                Helpers.shared().saveObj(Helpers.USERLBL, Helpers.shared().getAppUser().parse());
                             }
                             requestCallback.callback(success);
                         }
@@ -230,7 +130,7 @@ public class CommunicationHandler {
     }
 
     public void getProfilePicture(String url, final RequestCallback requestCallback) {
-        new ExternalServiceRequest(url, new ServiceCallback() {
+        new DrawableServiceRequest(url, new ServiceCallback() {
             @Override
             public void callback(JSONObject obj) {
                 try {
@@ -245,4 +145,5 @@ public class CommunicationHandler {
             }
         }).execute();
     }
+
 }
