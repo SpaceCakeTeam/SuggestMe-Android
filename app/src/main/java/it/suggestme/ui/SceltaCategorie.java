@@ -1,5 +1,6 @@
 package it.suggestme.ui;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.ActionBar;
@@ -38,6 +39,7 @@ public class SceltaCategorie extends AppCompatActivity
         setContentView(R.layout.activity_scelta_categorie);
 
         Helpers.shared().setCtx(this);
+        Helpers.shared().setDataUser();
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -122,5 +124,13 @@ public class SceltaCategorie extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {}
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Helpers.shared().getTwitterClient().onActivityResult(requestCode, resultCode, data);
+    }
 }

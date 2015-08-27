@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import it.suggestme.R;
 import it.suggestme.controller.CommunicationHandler;
 import it.suggestme.controller.Helpers;
+import it.suggestme.controller.interfaces.RequestCallback;
 import it.suggestme.model.Category;
 import it.suggestme.model.Question;
 import it.suggestme.model.QuestionData;
@@ -154,7 +155,7 @@ public class ChatFragment extends Fragment {
 
         QuestionData questionData = new QuestionData(categoryId, subcategoryId, mQuestionBody, anonflag);
 
-        Helpers.shared().communicationHandler.askSuggestionRequest(questionData, new CommunicationHandler.RequestCallback() {
+        Helpers.shared().communicationHandler.askSuggestionRequest(questionData, new RequestCallback() {
             @Override
             public void callback(Boolean success) {
                 if (success) {

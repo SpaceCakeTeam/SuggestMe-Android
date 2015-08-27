@@ -1,5 +1,6 @@
 package it.suggestme.ui;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -58,4 +59,11 @@ public class TutorialActivity extends FragmentActivity {
         super.onPause();
         AppEventsLogger.deactivateApp(this);
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Helpers.shared().getTwitterClient().onActivityResult(requestCode, resultCode, data);
+    }
+
 }

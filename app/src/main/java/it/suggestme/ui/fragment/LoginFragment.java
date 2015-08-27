@@ -10,7 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import it.suggestme.R;
-import it.suggestme.controller.CommunicationHandler;
+import it.suggestme.controller.interfaces.RequestCallback;
+import it.suggestme.controller.interfaces.HelperCallback;
 import it.suggestme.controller.Helpers;
 
 public class LoginFragment extends Fragment {
@@ -32,7 +33,9 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_login, container, false);
 
-        if( Helpers.shared().getUser().getUserData().getName() != null && !Helpers.shared().getUser().getUserData().getName().equals("") ) {
+        if( Helpers.shared().getAppUser().getUserData().getName() != null &&
+                !Helpers.shared().getAppUser().getUserData().getName().equals("") &&
+                Helpers.shared().getAppUser().getUserData().getName().length() > 0 ) {
             rootView.findViewById(R.id.login_facebook_main_button).setVisibility(View.GONE);
             rootView.findViewById(R.id.login_twitter_main_button).setVisibility(View.GONE);
 
@@ -42,13 +45,13 @@ public class LoginFragment extends Fragment {
         rootView.findViewById(R.id.login_facebook_main_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Helpers.shared().getFacebookAccount(LoginFragment.this, new Helpers.HelperCallback() {
+                Helpers.shared().performFacebookLogin(LoginFragment.this, new HelperCallback() {
                     @Override
                     public void callback(Boolean success) {
                         if (!success)
                             return;
 
-                        Helpers.shared().communicationHandler.registrationRequest(new CommunicationHandler.RequestCallback() {
+                        Helpers.shared().communicationHandler.registrationRequest(new RequestCallback() {
                             @Override
                             public void callback(Boolean success) {
                                 if (success) {
@@ -56,10 +59,37 @@ public class LoginFragment extends Fragment {
                                     rootView.findViewById(R.id.login_twitter_main_button).setVisibility(View.GONE);
                                     rootView.findViewById(R.id.login_done).setVisibility(View.VISIBLE);
 
-                                    Helpers.shared().getNavigationDrawer().updateProfilePic();
+                                    Helpers.shared().getNavigationDrawer().updateProfilePicFromFacebook();
                                 }
                             }
-                        }, Helpers.shared().getUser().parse());
+                        }, Helpers.shared().getAppUser().parse());
+                    }
+                });
+            }
+        });
+
+        rootView.findViewById(R.id.login_twitter_main_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Helpers.shared().performTwitterLogin(LoginFragment.this, new HelperCallback() {
+                    @Override
+                    public void callback(Boolean success) {
+                        if (!success)
+                            return;
+
+                        Helpers.shared().communicationHandler.registrationRequest(new RequestCallback() {
+
+                            @Override
+                            public void callback(Boolean success) {
+                                if (success) {
+                                    rootView.findViewById(R.id.login_facebook_main_button).setVisibility(View.GONE);
+                                    rootView.findViewById(R.id.login_twitter_main_button).setVisibility(View.GONE);
+                                    rootView.findViewById(R.id.login_done).setVisibility(View.VISIBLE);
+
+                                    Helpers.shared().getNavigationDrawer().updateProfilePicFromTwitter();
+                                }
+                            }
+                        }, Helpers.shared().getAppUser().parse());
                     }
                 });
             }

@@ -56,6 +56,9 @@ public class Parser {
     public static ArrayList<Question> generateQuestions(JSONObject obj) {
         ArrayList<Question> savedQuestions = new ArrayList<>();
 
+        if( obj == null )
+            return new ArrayList<Question>();
+
         JSONArray questions = obj.optJSONArray("questionslist");
         Log.i(Helpers.getString(R.string.loginfo), "questions: ".concat(questions.toString()));
 

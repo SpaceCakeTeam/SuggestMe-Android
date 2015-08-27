@@ -42,6 +42,9 @@
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:label="@string/app_name" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="1b3e4245bc3e8f677301b63a12425d7c70294c2b" />
     </application>
 
 </manifest>
