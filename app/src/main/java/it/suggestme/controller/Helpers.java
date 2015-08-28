@@ -81,6 +81,7 @@ public class Helpers {
     public static final String TOKENLBL           = "token";
     public static final String DEVICEOSLBL        = "device";
     public static final String DEVICEOSNAME       = "android";
+    public static final String FROMNOTIFICATION   = "intentFromNotification";
 
     private static Helpers mInstance;
     private static Context mAppContext;
@@ -140,11 +141,17 @@ public class Helpers {
     }
 
     public void initFBSdk(){
+        if(mCallbackManager != null)
+           return;
+
         FacebookSdk.sdkInitialize(Helpers.shared().getAppContext());
         mCallbackManager = CallbackManager.Factory.create();
     }
 
     public void initFabric(){
+        if(mTwitterAuthClient != null)
+            return;
+
         TwitterAuthConfig authConfig = new TwitterAuthConfig(getString(R.string.twitter_api_key), getString(R.string.twitter_secret));
         Fabric.with(mAppContext, new Twitter(authConfig));
         mTwitterAuthClient = new TwitterAuthClient();

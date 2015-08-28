@@ -18,6 +18,7 @@ import java.net.URL;
 import it.suggestme.R;
 import it.suggestme.controller.Helpers;
 import it.suggestme.controller.interfaces.ServiceCallback;
+import it.suggestme.controller.services.x509.UnTrustCertificate;
 import it.suggestme.model.User;
 
 /**
@@ -59,6 +60,7 @@ public class ServiceRequest extends AsyncTask<Void,Void,JSONObject> {
     protected JSONObject doInBackground(Void... v) {
         JSONObject response = new JSONObject();
         try {
+            UnTrustCertificate.allowAllSSL();
             HttpURLConnection connection = (HttpURLConnection) new URL(Helpers.getString(R.string.base_url)+requestUri).openConnection();
             connection.setRequestMethod("POST");
             OutputStream os = connection.getOutputStream();

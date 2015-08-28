@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.support.v4.widget.DrawerLayout;
 import android.view.WindowManager;
@@ -40,14 +41,14 @@ public class SceltaCategorie extends AppCompatActivity
             AboutFragment.OnFragmentInteractionListener,
             ChatFragment.OnFragmentInteractionListener {
 
-    private NavigationDrawerFragment mNavigationDrawerFragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scelta_categorie);
 
         Helpers.setAppContext(this);
+        Helpers.shared().initFBSdk();
+        Helpers.shared().initFabric();
         Helpers.shared().setDataUser();
 
         if( Helpers.shared().testGooglePlayServices(this) ) {
@@ -55,15 +56,16 @@ public class SceltaCategorie extends AppCompatActivity
             Helpers.shared().setBroadcastReceiver(new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    if ( Helpers.shared().getSavedInt(Helpers.INSTANCEIDSAVEDLBL) == 1 ) {
-                        Toast.makeText(context, "FATTO", Toast.LENGTH_LONG).show();
+                    if (Helpers.shared().getSavedInt(Helpers.INSTANCEIDSAVEDLBL) == 1) {
+                        Log.i(Helpers.getString(R.string.loginfo), "Twitter InstanceID saved");
                     } else {
-                        Toast.makeText(context, "NON FATTO", Toast.LENGTH_LONG).show();
+                        Log.i(Helpers.getString(R.string.loginfo), "Twitter InstanceID NOT saved");
                     }
                 }
             });
 
-            startService(new Intent(this, RegistrationIntentService.class));
+            if( Helpers.shared().getSavedInt(Helpers.INSTANCEIDSAVEDLBL) == 1 )
+                startService(new Intent(this, RegistrationIntentService.class));
 
         }
 
@@ -72,10 +74,14 @@ public class SceltaCategorie extends AppCompatActivity
             getWindow().setStatusBarColor(this.getResources().getColor(R.color.palette_white_transparent));
         }
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        NavigationDrawerFragment mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, SceltaCategorieFragment.newInstance()).commit();
+        if( getIntent().getBooleanExtra(Helpers.FROMNOTIFICATION,false) )
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, LeMieDomandeFragment.newInstance()).commit();
+        else
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, SceltaCategorieFragment.newInstance()).commit();
+
         restoreActionBar();
     }
 
@@ -137,8 +143,10 @@ public class SceltaCategorie extends AppCompatActivity
         super.onResume();
         AppEventsLogger.activateApp(this);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(Helpers.shared().getBroadcastReceiver(),
-                new IntentFilter(Helpers.REGISTRATION_COMPLETE));
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(
+                        Helpers.shared().getBroadcastReceiver(),
+                        new IntentFilter(Helpers.REGISTRATION_COMPLETE));
     }
 
     @Override

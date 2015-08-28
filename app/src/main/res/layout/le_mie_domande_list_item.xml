@@ -17,7 +17,7 @@
         android:layout_marginStart="10dp"
         android:background="@drawable/ic_launcher_suggestme"
         android:layout_gravity="center_vertical"
-        android:contentDescription="@string/accessibility_categoria_social" />
+        android:contentDescription="@string/category_social_accessibility" />
 
     <TextView
         android:id="@+id/list_row_title"
@@ -41,6 +41,6 @@
         android:layout_marginEnd="10dp"
         android:background="@drawable/ic_launcher_suggestme"
         android:layout_gravity="end|center_vertical"
-        android:contentDescription="@string/accessibility_replied" />
+        android:contentDescription="@string/replied_accessibility" />
 
 </RelativeLayout>

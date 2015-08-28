@@ -22,9 +22,11 @@ public class TutorialActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_tutorial);
 
         Helpers.setAppContext(this);
-        setContentView(R.layout.activity_tutorial);
+        Helpers.shared().initFBSdk();
+        Helpers.shared().initFabric();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
