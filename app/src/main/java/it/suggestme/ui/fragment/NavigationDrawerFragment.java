@@ -82,6 +82,10 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        Helpers.shared().initFBSdk();
+        Helpers.shared().initFabric();
+
         mRootView = inflater.inflate(R.layout.fragment_navigation_drawer,container);
 
         if( Helpers.shared().getLoggedWith() == Helpers.FACEBOOK )

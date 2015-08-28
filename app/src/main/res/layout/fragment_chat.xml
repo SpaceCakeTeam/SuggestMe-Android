@@ -108,7 +108,7 @@
         android:hint="@string/edittext_hint"
         android:inputType="textAutoComplete|textAutoCorrect|textMultiLine"
         android:maxLines="6"
-        android:imeActionLabel="@string/invia"
+        android:imeActionLabel="@string/send"
         android:drawableEnd="@drawable/ic_send_arrow"
         android:drawableRight="@drawable/ic_send_arrow" />
 

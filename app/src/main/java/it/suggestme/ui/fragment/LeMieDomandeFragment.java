@@ -15,6 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import it.suggestme.R;
 import it.suggestme.controller.interfaces.RequestCallback;
@@ -63,7 +65,6 @@ public class LeMieDomandeFragment extends Fragment {
             replied = aQuest.getSuggest() != null;
 
             if( !replied ) {
-                Log.i(Helpers.getString(R.string.loginfo), "Question: ".concat(((Integer) aQuest.getId()).toString()).concat(" REPLIED: ").concat(replied.toString()));
                 unrepliedQuestion.put(aQuest.getId());
             }
             categoryName = Helpers.shared().getCategoryFromID(aQuest.getQuestionData().getCatId()).getName();
@@ -78,6 +79,8 @@ public class LeMieDomandeFragment extends Fragment {
                     subCategoryName,
                     replied));
         }
+
+        Collections.reverse(mReplied);
 
         mQuestionList.setAdapter(new ReplyListAdapter(
             getActivity().getApplicationContext(),

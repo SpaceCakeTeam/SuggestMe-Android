@@ -14,9 +14,13 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
+import org.json.JSONArray;
+
 import it.suggestme.R;
 import it.suggestme.controller.Helpers;
-import it.suggestme.ui.SplashScreenActivity;
+import it.suggestme.controller.interfaces.RequestCallback;
+import it.suggestme.model.Question;
+import it.suggestme.ui.SceltaCategorie;
 
 /**
  * Created by federicomaggi on 28/08/15.
@@ -39,6 +43,10 @@ public class PushListenerService extends GcmListenerService {
      */
     @Override
     public void onMessageReceived(String from, Bundle data) {
+
+        Helpers.setAppContext(this);
+        Helpers.shared().setDataUser();
+
         String message = data.getString("message");
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + message);
@@ -55,7 +63,30 @@ public class PushListenerService extends GcmListenerService {
          *     - Store message in local database.
          *     - Update UI.
          */
+        JSONArray unrepliedQuestion = new JSONArray();
+        boolean replied;
 
+        for( Question aQuest : Helpers.shared().getQuestions() ) {
+
+            replied = aQuest.getSuggest() != null;
+
+            if( !replied ) {
+                unrepliedQuestion.put(aQuest.getId());
+            }
+        }
+
+        if (Helpers.shared().getQuestions() != null && Helpers.shared().getQuestions().size() > 0) {
+            Helpers.shared().communicationHandler.getSuggestsRequest(unrepliedQuestion, new RequestCallback() {
+                @Override
+                public void callback(Boolean success) {
+
+                    if (!success)
+                        return;
+
+                    // Do nothing
+                }
+            });
+        }
         /**
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
@@ -69,17 +100,18 @@ public class PushListenerService extends GcmListenerService {
      * @param message GCM message received.
      */
     private void sendNotification(String message) {
-        Intent intent = new Intent(this, SplashScreenActivity.class);
+        Intent intent = new Intent(this, SceltaCategorie.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(Helpers.FROMNOTIFICATION,true);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_launcher_suggestme)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(getString(R.string.app_name))
-                .setContentText(message)
+                .setContentText(Helpers.getString(R.string.push_notification_message) + " " + message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
