@@ -17,6 +17,10 @@ import it.suggestme.model.Suggest;
 import it.suggestme.model.User;
 import it.suggestme.model.UserData;
 
+/**
+ * Created by federicomaggi on 27/08/15.
+ * © 2015 Federico Maggi. All rights reserved
+ */
 public class Parser {
 
     private static Parser mInstance;
@@ -107,4 +111,5 @@ public class Parser {
             return null;
         }
     }
+
 }

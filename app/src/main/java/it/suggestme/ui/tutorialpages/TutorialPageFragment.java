@@ -92,6 +92,7 @@ public class TutorialPageFragment extends Fragment {
             rootView.findViewById(R.id.login_nonora_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Helpers.shared().setLoggedWith(Helpers.ANON);
                     login(new JSONObject());
                 }
             });

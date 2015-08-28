@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import com.facebook.appevents.AppEventsLogger;
 
@@ -19,7 +20,14 @@ public class SplashScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Helpers.shared().setCtx(this);
+        Helpers.setAppContext(this);
+        Helpers.shared();
+
+        if( !Helpers.shared().testGooglePlayServices(this) ) {
+            Log.e(Helpers.getString(R.string.logerror), "No valid Google Play Services APK found.");
+            return;
+        }
+
         Helpers.shared().initFBSdk();
         Helpers.shared().initFabric();
         Helpers.shared().getAppUser();
@@ -43,11 +51,28 @@ public class SplashScreenActivity extends Activity {
     protected void onResume() {
         super.onResume();
         AppEventsLogger.activateApp(this);
+
+        if( !Helpers.shared().testGooglePlayServices(this) ) {
+            Log.e(Helpers.getString(R.string.logerror), "No valid Google Play Services APK found.");
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         AppEventsLogger.deactivateApp(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case Helpers.PLAY_SERVICES_RESOLUTION_REQUEST:
+                if (resultCode == RESULT_CANCELED) {
+                    Helpers.showAlert(-11);
+                    finish();
+                }
+                return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

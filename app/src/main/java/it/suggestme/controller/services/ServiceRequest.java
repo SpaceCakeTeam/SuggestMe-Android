@@ -1,4 +1,4 @@
-package it.suggestme.controller.interfaces;
+package it.suggestme.controller.services;
 
 import android.os.AsyncTask;
 
@@ -17,7 +17,7 @@ import java.net.URL;
 
 import it.suggestme.R;
 import it.suggestme.controller.Helpers;
-import it.suggestme.controller.services.ServiceCallback;
+import it.suggestme.controller.interfaces.ServiceCallback;
 import it.suggestme.model.User;
 
 /**

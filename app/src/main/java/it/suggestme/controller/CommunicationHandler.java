@@ -10,9 +10,9 @@ import java.util.ArrayList;
 
 import it.suggestme.R;
 
-import it.suggestme.controller.interfaces.ServiceRequest;
+import it.suggestme.controller.services.ServiceRequest;
 import it.suggestme.controller.interfaces.RequestCallback;
-import it.suggestme.controller.services.ServiceCallback;
+import it.suggestme.controller.interfaces.ServiceCallback;
 import it.suggestme.controller.services.DrawableServiceRequest;
 
 import it.suggestme.model.Category;
@@ -20,6 +20,10 @@ import it.suggestme.model.Question;
 import it.suggestme.model.QuestionData;
 import it.suggestme.model.Suggest;
 
+/**
+ * Created by federicomaggi on 27/08/15.
+ * © 2015 Federico Maggi. All rights reserved
+ */
 public class CommunicationHandler {
 
     public CommunicationHandler() {}
@@ -122,6 +126,23 @@ public class CommunicationHandler {
                     Helpers.shared().saveObj("questions", Parser.parseQuestions(Helpers.shared().getQuestions()));
                     requestCallback.callback(true);
                 } else if (response.optString("status").equalsIgnoreCase("ko")) {
+                    Helpers.showAlert(response.optInt("errno"));
+                    requestCallback.callback(false);
+                }
+            }
+        }).execute();
+    }
+
+    public void sendPushToken(final JSONObject pushtoken, final RequestCallback requestCallback) {
+        new ServiceRequest(Helpers.getString(R.string.onlypush_uri), pushtoken, new ServiceCallback(){
+            @Override
+            public void callback(JSONObject response) {
+                if( response.optString("status").equalsIgnoreCase("ok") ) {
+                    JSONObject resposeData = response.optJSONObject("data");
+                    Helpers.shared().saveInt(Helpers.INSTANCEIDSAVEDLBL,1);
+                    requestCallback.callback(true);
+                }else if( response.optString("status").equalsIgnoreCase("ko")){
+                    Helpers.shared().saveInt(Helpers.INSTANCEIDSAVEDLBL,0);
                     Helpers.showAlert(response.optInt("errno"));
                     requestCallback.callback(false);
                 }
