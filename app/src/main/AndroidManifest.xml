@@ -3,8 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.suggestme">
 
+    <permission
+        android:name="it.suggestme.permission.C2D_MESSAGE"
+        android:protectionLevel="signature"/>
+
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="it.suggestme.permission.C2D_MESSAGE"/>
 
     <application
         android:allowBackup="true"
@@ -45,6 +52,41 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="1b3e4245bc3e8f677301b63a12425d7c70294c2b" />
+
+        <!-- GCM PUSH SERVICES -->
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <category android:name="it.suggestme"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" /> <!-- PRE KITKAT SUPPORT -->
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="it.suggestme.controller.services.RegistrationIntentService"
+            android:exported="false">
+        </service>
+
+        <service
+            android:name="it.suggestme.controller.services.PushListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="it.suggestme.controller.services.InstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
+
+
     </application>
 
 </manifest>

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import it.suggestme.controller.Helpers;
+import it.suggestme.controller.interfaces.ServiceCallback;
 
 /**
  * Created by federicomaggi on 27/08/15.

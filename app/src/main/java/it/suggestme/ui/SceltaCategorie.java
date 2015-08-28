@@ -1,8 +1,12 @@
 package it.suggestme.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -11,12 +15,13 @@ import android.view.Gravity;
 import android.support.v4.widget.DrawerLayout;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
 import it.suggestme.R;
 import it.suggestme.controller.Helpers;
+import it.suggestme.controller.services.RegistrationIntentService;
 import it.suggestme.ui.fragment.AboutFragment;
 import it.suggestme.ui.fragment.ChatFragment;
 import it.suggestme.ui.fragment.LeMieDomandeFragment;
@@ -24,6 +29,10 @@ import it.suggestme.ui.fragment.LoginFragment;
 import it.suggestme.ui.fragment.NavigationDrawerFragment;
 import it.suggestme.ui.fragment.SceltaCategorieFragment;
 
+/**
+ * Created by federicomaggi on 27/08/15.
+ * © 2015 Federico Maggi. All rights reserved
+ */
 public class SceltaCategorie extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
             LeMieDomandeFragment.OnFragmentInteractionListener,
@@ -38,8 +47,25 @@ public class SceltaCategorie extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scelta_categorie);
 
-        Helpers.shared().setCtx(this);
+        Helpers.setAppContext(this);
         Helpers.shared().setDataUser();
+
+        if( Helpers.shared().testGooglePlayServices(this) ) {
+
+            Helpers.shared().setBroadcastReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if ( Helpers.shared().getSavedInt(Helpers.INSTANCEIDSAVEDLBL) == 1 ) {
+                        Toast.makeText(context, "FATTO", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(context, "NON FATTO", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+
+            startService(new Intent(this, RegistrationIntentService.class));
+
+        }
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -110,16 +136,21 @@ public class SceltaCategorie extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         AppEventsLogger.activateApp(this);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(Helpers.shared().getBroadcastReceiver(),
+                new IntentFilter(Helpers.REGISTRATION_COMPLETE));
     }
 
     @Override
     protected void onPause() {
-        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(Helpers.shared().getBroadcastReceiver());
+
         AppEventsLogger.deactivateApp(this);
+        super.onPause();
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, SceltaCategorieFragment.newInstance()).commit();
     }
 
@@ -133,4 +164,5 @@ public class SceltaCategorie extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         Helpers.shared().getTwitterClient().onActivityResult(requestCode, resultCode, data);
     }
+
 }

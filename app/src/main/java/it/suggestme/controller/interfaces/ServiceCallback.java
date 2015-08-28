@@ -1,4 +1,4 @@
-package it.suggestme.controller.services;
+package it.suggestme.controller.interfaces;
 
 import org.json.JSONObject;
 

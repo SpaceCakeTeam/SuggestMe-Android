@@ -1,7 +1,10 @@
 package it.suggestme.controller;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -11,11 +14,13 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,6 +36,10 @@ import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -43,6 +52,7 @@ import io.fabric.sdk.android.Fabric;
 import it.suggestme.R;
 
 import it.suggestme.controller.interfaces.HelperCallback;
+import it.suggestme.controller.services.RegistrationIntentService;
 import it.suggestme.model.Category;
 import it.suggestme.model.Question;
 
@@ -51,6 +61,10 @@ import it.suggestme.model.User;
 import it.suggestme.model.UserData;
 import it.suggestme.ui.fragment.NavigationDrawerFragment;
 
+/**
+ * Created by federicomaggi on 27/08/15.
+ * © 2015 Federico Maggi. All rights reserved
+ */
 public class Helpers {
 
     private static final String FILENAME = "preferencesfile";
@@ -62,10 +76,14 @@ public class Helpers {
     private static       int LOGGEDWITH;
     private static final String LOGGEDWTHLBL = "loggedwith";
 
-    public static final String USERLBL = "user";
+    public static final String USERLBL            = "user";
+    public static final String INSTANCEIDSAVEDLBL = "instanceIDsavedOnServer";
+    public static final String TOKENLBL           = "token";
+    public static final String DEVICEOSLBL        = "device";
+    public static final String DEVICEOSNAME       = "android";
 
     private static Helpers mInstance;
-    private static Context ctx;
+    private static Context mAppContext;
 
     private Drawable mProfilePic;
     private NavigationDrawerFragment mNavDrawer;
@@ -77,9 +95,13 @@ public class Helpers {
     // Social
     private CallbackManager mCallbackManager;
     private TwitterAuthClient mTwitterAuthClient;
-    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
-    private static final String TWITTER_KEY = "glpdt59RhM0EKwvfAhxqK6N3G";
-    private static final String TWITTER_SECRET = "4CnJSG24WAb6KOgrX2h2aD757rua1mkkYRATlC9G4IrGASnsSk";
+
+    // Google GCM Push
+    public static final String REGISTRATION_COMPLETE = "registrationComplete";
+    public static final int    PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private InstanceID mInstanceID;
+    private String     mGCMToken;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
 
 
     private Helpers() {
@@ -89,7 +111,8 @@ public class Helpers {
                     .put("-1", new JSONObject().put("title", "").put("message", "").put("cancel", ""))
                     .put("-2" , new JSONObject().put("title", "").put("message", "").put("cancel", ""))
                     .put("-3" , new JSONObject().put("title", "").put("message", "").put("cancel", ""))
-                    .put("-10", new JSONObject().put("title","Errore").put("message","Impossibile scaricare la foto profile").put("cancel","Ok"))
+                    .put("-10", new JSONObject().put("title",getString(R.string.error)).put("message",getString(R.string.profilePic404)).put("cancel",getString(R.string.ok)))
+                    .put("-11", new JSONObject().put("title",getString(R.string.error)).put("message",getString(R.string.noGplayServices)).put("cancel",getString(R.string.ok)))
                     .put("1", new JSONObject().put("title", "").put("message", "").put("cancel", ""));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -117,26 +140,73 @@ public class Helpers {
     }
 
     public void initFBSdk(){
-        FacebookSdk.sdkInitialize(Helpers.shared().getCtx());
+        FacebookSdk.sdkInitialize(Helpers.shared().getAppContext());
         mCallbackManager = CallbackManager.Factory.create();
     }
 
     public void initFabric(){
-        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-        Fabric.with(ctx, new Twitter(authConfig));
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(getString(R.string.twitter_api_key), getString(R.string.twitter_secret));
+        Fabric.with(mAppContext, new Twitter(authConfig));
         mTwitterAuthClient = new TwitterAuthClient();
     }
 
-    public void setCtx(Context currCtx) {
-        ctx = currCtx;
+    public boolean testGooglePlayServices(Activity activity){
+
+        int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(mAppContext);
+        if( result != ConnectionResult.SUCCESS ) {
+            if( GooglePlayServicesUtil.isUserRecoverableError(result) ) {
+                GooglePlayServicesUtil.getErrorDialog(result, activity, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            }
+            return false;
+        }
+        return true;
     }
 
-    public Context getCtx() {
-        return ctx;
+    public void registerToGCM( Activity activity ) {
+
+    }
+
+    public void setInstanceID() {
+        mInstanceID = InstanceID.getInstance(getAppContext());
+    }
+
+    public InstanceID getInstanceID() {
+        return mInstanceID;
+    }
+
+    public JSONObject getPushTokenRequestData() throws JSONException {
+
+        return new JSONObject()
+                .put(TOKENLBL,getGCMTOken())
+                .put(DEVICEOSLBL,DEVICEOSNAME);
+    }
+
+    public void setGCMToken() throws IOException {
+        mGCMToken = getInstanceID().getToken(getString(R.string.google_gcm_sender_id), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+    }
+
+    public String getGCMTOken(){
+        return mGCMToken;
+    }
+
+    public BroadcastReceiver getBroadcastReceiver(){
+        return mRegistrationBroadcastReceiver;
+    }
+
+    public void setBroadcastReceiver( BroadcastReceiver br ){
+        mRegistrationBroadcastReceiver = br;
+    }
+
+    public static void setAppContext(Context currCtx) {
+        mAppContext = currCtx;
+    }
+
+    public Context getAppContext() {
+        return mAppContext;
     }
 
     private static int getDisplayHeight() {
-        WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) mAppContext.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -144,7 +214,7 @@ public class Helpers {
     }
 
     private static int getDisplayWidth() {
-        WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) mAppContext.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -152,11 +222,11 @@ public class Helpers {
     }
 
     public static String getString(int resId) {
-        return ctx.getString(resId);
+        return mAppContext.getString(resId);
     }
 
     public static boolean connected() {
-        ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) mAppContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable() && cm.getActiveNetworkInfo().isConnected();
     }
 
@@ -178,7 +248,7 @@ public class Helpers {
             }
         }
 
-        return new AlertDialog.Builder(ctx).setTitle(alert.optString("title")).setMessage(alert.optString("message")).show();
+        return new AlertDialog.Builder(mAppContext).setTitle(alert.optString("title")).setMessage(alert.optString("message")).show();
     }
 
     public void setSpinner() {
@@ -190,19 +260,19 @@ public class Helpers {
     }
 
     public boolean keyExist(String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
+        SharedPreferences sp = mAppContext.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         return sp.contains(key);
     }
 
     public void saveObj(String key, JSONObject obj) {
-        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
+        SharedPreferences sp = mAppContext.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, obj.toString());
         editor.apply();
     }
 
     public JSONObject getSavedObj(String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
+        SharedPreferences sp = mAppContext.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         if(!keyExist(key))
             return null;
         try {
@@ -215,35 +285,35 @@ public class Helpers {
     }
 
     public void saveString(String key, String text) {
-        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
+        SharedPreferences sp = mAppContext.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, text);
         editor.apply();
     }
 
     public String getSavedString(String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
+        SharedPreferences sp = mAppContext.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         if(!keyExist(key))
             return null;
         return sp.getString(key, null);
     }
 
     public void saveInt(String key, int val) {
-        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
+        SharedPreferences sp = mAppContext.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt(key, val);
         editor.apply();
     }
 
     public int getSavedInt(String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
+        SharedPreferences sp = mAppContext.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         if(!keyExist(key))
             return -1;
         return sp.getInt(key, -1);
     }
 
     public void removePreference(String key) {
-        SharedPreferences sp = ctx.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
+        SharedPreferences sp = mAppContext.getSharedPreferences(FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.remove(key);
         editor.apply();

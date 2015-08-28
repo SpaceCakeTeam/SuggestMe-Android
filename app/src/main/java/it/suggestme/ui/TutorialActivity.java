@@ -23,7 +23,7 @@ public class TutorialActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Helpers.shared().setCtx(this);
+        Helpers.setAppContext(this);
         setContentView(R.layout.activity_tutorial);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
