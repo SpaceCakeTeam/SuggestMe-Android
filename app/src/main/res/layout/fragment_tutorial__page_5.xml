@@ -24,17 +24,11 @@
         android:layout_marginBottom="10dp" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TEMP FACEBOOK"
-        android:id="@+id/login_facebook_tutorial_button"
-        android:layout_gravity="right|center_vertical" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TEMP TWITTER"
-        android:id="@+id/login_twitter_tutorial_button"
-        android:layout_gravity="left|center_vertical" />
+        android:id="@+id/login_social_tutorial_button"
+        android:layout_width="250dp"
+        android:layout_height="150dp"
+        android:gravity="center|center_horizontal|center_vertical"
+        android:layout_gravity="center"
+        android:background="@color/palette_primary_light"/>
 
 </FrameLayout>

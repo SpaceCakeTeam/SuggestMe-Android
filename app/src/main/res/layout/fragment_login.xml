@@ -12,38 +12,20 @@
         android:id="@+id/imageView"
         android:layout_gravity="center"
         android:background="@drawable/login_scritta"/>
-<!--
+
     <Button
+        android:id="@+id/login_social_main_button"
         android:layout_width="250dp"
-        android:layout_height="140dp"
-        android:id="@+id/imageButton"
-        android:layout_gravity="center_horizontal|center_vertical"
-
-        android:background="@layout/fb_btn_shape"
-        android:rotation="0"
-        android:rotationY="0" />
--->
-
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TEMP FACEBOOK"
-        android:id="@+id/login_facebook_main_button"
-        android:layout_gravity="right|center_vertical" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TEMP TWITTER"
-        android:id="@+id/login_twitter_main_button"
-        android:layout_gravity="left|center_vertical" />
+        android:layout_height="150dp"
+        android:gravity="center|center_horizontal|center_vertical"
+        android:layout_gravity="center"
+        android:background="@color/palette_primary_light"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/login_done"
-        android:textSize="24dp"
+        android:textSize="@dimen/text_size_medium"
         android:textColor="@color/palette_black"
         android:background="@drawable/corner_radius"
         android:id="@+id/login_done"

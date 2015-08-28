@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -25,6 +26,8 @@ public class TutorialPageFragment extends Fragment {
     private final int CHATPAGE = 2;
     private final int WAITPAGE = 3;
     private final int LOGINPAGE = 4;
+
+    private boolean firstTouchFired = false;
 
     public TutorialPageFragment setTutorialPage(int position) {
         this.mTutorialPage = position;
@@ -59,33 +62,44 @@ public class TutorialPageFragment extends Fragment {
 
         if(mTutorialPage == LOGINPAGE) {
 
-            rootView.findViewById(R.id.login_facebook_tutorial_button).setOnClickListener(new View.OnClickListener() {
+            rootView.findViewById(R.id.login_social_tutorial_button).setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public void onClick(View v) {
-                    Helpers.shared().performFacebookLogin(TutorialPageFragment.this, new HelperCallback() {
-                        @Override
-                        public void callback(Boolean success) {
-                            if (!success)
-                                return;
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getX() / v.getWidth() < event.getY() / v.getHeight()) {
+                        if (firstTouchFired)
+                            return false;
+                        firstTouchFired = true;
+                        Log.i(Helpers.getString(R.string.loginfo), "FACEBOOK");
 
-                            login(Helpers.shared().getAppUser().parse());
-                        }
-                    });
-                }
-            });
+                        Helpers.shared().performFacebookLogin(TutorialPageFragment.this, new HelperCallback() {
+                            @Override
+                            public void callback(Boolean success) {
+                                firstTouchFired = false;
+                                if (!success)
+                                    return;
 
-            rootView.findViewById(R.id.login_twitter_tutorial_button).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Helpers.shared().performTwitterLogin(TutorialPageFragment.this, new HelperCallback() {
-                        @Override
-                        public void callback(Boolean success) {
-                            if (!success) {
-                                return;
+                                login(Helpers.shared().getAppUser().parse());
                             }
-                            login(Helpers.shared().getAppUser().parse());
-                        }
-                    });
+                        });
+                        return true;
+                    } else {
+                        if (firstTouchFired)
+                            return false;
+                        firstTouchFired = true;
+                        Log.i(Helpers.getString(R.string.loginfo), "TWITTER");
+
+                        Helpers.shared().performTwitterLogin(TutorialPageFragment.this, new HelperCallback() {
+                            @Override
+                            public void callback(Boolean success) {
+                                firstTouchFired = false;
+                                if (!success) {
+                                    return;
+                                }
+                                login(Helpers.shared().getAppUser().parse());
+                            }
+                        });
+                        return true;
+                    }
                 }
             });
 
