@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -22,6 +24,8 @@ public class LoginFragment extends Fragment {
         return new LoginFragment();
     }
 
+    private boolean firstTouchFired = false;
+
     public LoginFragment() {}
 
     @Override
@@ -36,65 +40,74 @@ public class LoginFragment extends Fragment {
         if( Helpers.shared().getAppUser().getUserData().getName() != null &&
                 !Helpers.shared().getAppUser().getUserData().getName().equals("") &&
                 Helpers.shared().getAppUser().getUserData().getName().length() > 0 ) {
-            rootView.findViewById(R.id.login_facebook_main_button).setVisibility(View.GONE);
-            rootView.findViewById(R.id.login_twitter_main_button).setVisibility(View.GONE);
+            rootView.findViewById(R.id.login_social_main_button).setVisibility(View.GONE);
 
             rootView.findViewById(R.id.login_done).setVisibility(View.VISIBLE);
         }
 
-        rootView.findViewById(R.id.login_facebook_main_button).setOnClickListener(new View.OnClickListener() {
+        rootView.findViewById(R.id.login_social_main_button).setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                Helpers.shared().performFacebookLogin(LoginFragment.this, new HelperCallback() {
-                    @Override
-                    public void callback(Boolean success) {
-                        if (!success)
-                            return;
+            public boolean onTouch(View v, MotionEvent event) {
+                if( event.getX() / v.getWidth() < event.getY() / v.getHeight() ){
+                    if( firstTouchFired )
+                        return false;
+                    firstTouchFired = true;
 
-                        Helpers.shared().communicationHandler.registrationRequest(new RequestCallback() {
-                            @Override
-                            public void callback(Boolean success) {
-                                if (success) {
-                                    rootView.findViewById(R.id.login_facebook_main_button).setVisibility(View.GONE);
-                                    rootView.findViewById(R.id.login_twitter_main_button).setVisibility(View.GONE);
-                                    rootView.findViewById(R.id.login_done).setVisibility(View.VISIBLE);
+                    Log.i(Helpers.getString(R.string.loginfo),"FACEBOOK");
+                    Helpers.shared().performFacebookLogin(LoginFragment.this, new HelperCallback() {
+                        @Override
+                        public void callback(Boolean success) {
+                            firstTouchFired = false;
 
-                                    Helpers.shared().getNavigationDrawer().updateProfilePicFromFacebook();
+                            if (!success)
+                                return;
+
+                            Helpers.shared().communicationHandler.registrationRequest(new RequestCallback() {
+                                @Override
+                                public void callback(Boolean success) {
+                                    if (success) {
+                                        rootView.findViewById(R.id.login_social_main_button).setVisibility(View.GONE);
+                                        rootView.findViewById(R.id.login_done).setVisibility(View.VISIBLE);
+
+                                        Helpers.shared().getNavigationDrawer().updateProfilePicFromFacebook();
+                                    }
                                 }
-                            }
-                        }, Helpers.shared().getAppUser().parse());
-                    }
-                });
+                            }, Helpers.shared().getAppUser().parse());
+                        }
+                    });
+                    return true;
+                } else {
+                    if( firstTouchFired )
+                        return false;
+                    firstTouchFired = true;
+
+                    Log.i(Helpers.getString(R.string.loginfo), "TWITTER");
+                    Helpers.shared().performTwitterLogin(LoginFragment.this, new HelperCallback() {
+                        @Override
+                        public void callback(Boolean success) {
+                            firstTouchFired = false;
+
+                            if (!success)
+                                return;
+
+                            Helpers.shared().communicationHandler.registrationRequest(new RequestCallback() {
+
+                                @Override
+                                public void callback(Boolean success) {
+                                    if (success) {
+                                        rootView.findViewById(R.id.login_social_main_button).setVisibility(View.GONE);
+                                        rootView.findViewById(R.id.login_done).setVisibility(View.VISIBLE);
+
+                                        Helpers.shared().getNavigationDrawer().updateProfilePicFromTwitter();
+                                    }
+                                }
+                            }, Helpers.shared().getAppUser().parse());
+                        }
+                    });
+                    return true;
+                }
             }
         });
-
-        rootView.findViewById(R.id.login_twitter_main_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Helpers.shared().performTwitterLogin(LoginFragment.this, new HelperCallback() {
-                    @Override
-                    public void callback(Boolean success) {
-                        if (!success)
-                            return;
-
-                        Helpers.shared().communicationHandler.registrationRequest(new RequestCallback() {
-
-                            @Override
-                            public void callback(Boolean success) {
-                                if (success) {
-                                    rootView.findViewById(R.id.login_facebook_main_button).setVisibility(View.GONE);
-                                    rootView.findViewById(R.id.login_twitter_main_button).setVisibility(View.GONE);
-                                    rootView.findViewById(R.id.login_done).setVisibility(View.VISIBLE);
-
-                                    Helpers.shared().getNavigationDrawer().updateProfilePicFromTwitter();
-                                }
-                            }
-                        }, Helpers.shared().getAppUser().parse());
-                    }
-                });
-            }
-        });
-
         return rootView;
     }
 
