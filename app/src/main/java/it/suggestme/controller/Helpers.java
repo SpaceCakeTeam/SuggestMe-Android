@@ -2,9 +2,9 @@ package it.suggestme.controller;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -14,7 +14,6 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,7 +51,6 @@ import io.fabric.sdk.android.Fabric;
 import it.suggestme.R;
 
 import it.suggestme.controller.interfaces.HelperCallback;
-import it.suggestme.controller.services.RegistrationIntentService;
 import it.suggestme.model.Category;
 import it.suggestme.model.Question;
 
@@ -69,6 +67,7 @@ public class Helpers {
 
     private static final String FILENAME = "preferencesfile";
     private static JSONObject alerts;
+    private ProgressDialog mProgressDialog;
 
     public  static final int ANON     = 0;
     public  static final int FACEBOOK = 1;
@@ -108,12 +107,14 @@ public class Helpers {
     private Helpers() {
         try {
             alerts = new JSONObject() //TODO
-                    .put( "0" , new JSONObject().put("title", "").put("message", "").put("cancel", ""))
+                    .put( "0" , new JSONObject().put("title", getString(R.string.error)).put("message", getString(R.string.nointernet)).put("cancel", getString(R.string.ok)))
                     .put("-1", new JSONObject().put("title", "").put("message", "").put("cancel", ""))
                     .put("-2" , new JSONObject().put("title", "").put("message", "").put("cancel", ""))
                     .put("-3" , new JSONObject().put("title", "").put("message", "").put("cancel", ""))
                     .put("-10", new JSONObject().put("title",getString(R.string.error)).put("message",getString(R.string.profilePic404)).put("cancel",getString(R.string.ok)))
                     .put("-11", new JSONObject().put("title",getString(R.string.error)).put("message",getString(R.string.noGplayServices)).put("cancel",getString(R.string.ok)))
+                    .put("-12", new JSONObject().put("title",getString(R.string.error)).put("message",getString(R.string.facebookloginfail)).put("cancel",getString(R.string.ok)))
+                    .put("-13", new JSONObject().put("title",getString(R.string.error)).put("message",getString(R.string.twitterloginfail)).put("cancel",getString(R.string.ok)))
                     .put("1", new JSONObject().put("title", "").put("message", "").put("cancel", ""));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -167,10 +168,6 @@ public class Helpers {
             return false;
         }
         return true;
-    }
-
-    public void registerToGCM( Activity activity ) {
-
     }
 
     public void setInstanceID() {
@@ -259,11 +256,22 @@ public class Helpers {
     }
 
     public void setSpinner() {
-        //TODO
+        if( mProgressDialog == null )
+            mProgressDialog = new ProgressDialog(getAppContext());
+
+        mProgressDialog.setTitle(getString(R.string.loading));
+        mProgressDialog.setMessage(getString(R.string.loadingmessage));
+        mProgressDialog.show();
     }
 
     public void removeSpinner() {
-        //TODO
+        if( mProgressDialog == null )
+            return;
+
+        if( mProgressDialog.isShowing() ) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 
     public boolean keyExist(String key) {
@@ -424,19 +432,21 @@ public class Helpers {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
 
-                    Profile userProfile = Profile.getCurrentProfile();
+                    Profile.getCurrentProfile();
 
-                    GraphRequest request = GraphRequest.newMeRequest(
+                    final GraphRequest request = GraphRequest.newMeRequest(
                         loginResult.getAccessToken(),
                         new GraphRequest.GraphJSONObjectCallback() {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
 
                                 UserData.Gender gender;
+                                String mail;
+                                int epoch;
 
                                 try {
 
-                                    switch (response.getJSONObject().getString("gender")){
+                                    switch (response.getJSONObject().getString("gender")) {
                                         case "male":
                                             gender = UserData.Gender.m;
                                             break;
@@ -447,38 +457,58 @@ public class Helpers {
                                             gender = UserData.Gender.u;
                                     }
 
-                                    String birthday = response.getJSONObject().getString("birthday").replace("\\","");
+                                }catch( JSONException e){
+                                    Log.e(getString(R.string.logerror),"FB gender permission not given");
+                                    gender = UserData.Gender.u;
+                                }
+
+                                try {
+
+                                    String birthday = response.getJSONObject().getString("birthday").replace("\\", "");
                                     long lepoch;
-                                    int epoch = 0;
                                     try {
                                         Date theDate = new SimpleDateFormat("MM/dd/yyyy", Locale.ITALIAN).parse(birthday);
                                         lepoch = theDate.getTime() / 1000;
-                                        epoch = (int)lepoch;
+                                        epoch = (int) lepoch;
                                     } catch (ParseException e) {
                                         e.printStackTrace();
+                                        epoch = 0;
                                     }
+                                }catch (JSONException e) {
+                                    Log.e(getString(R.string.logerror),"FB birthday permission not given");
+                                    epoch = 0;
+                                }
 
-                                    mAppUser = new User( mAppUser !=null? mAppUser.getId():-1,
-                                        false,
-                                        new UserData(
-                                                Profile.getCurrentProfile().getFirstName(),
-                                                Profile.getCurrentProfile().getLastName(),
-                                                epoch,
-                                                gender,
-                                                response.getJSONObject().getString("email")
-                                        ));
+                                try{
+                                    mail = response.getJSONObject().getString("email");
+
+                                } catch (JSONException e) {
+                                    Log.e(getString(R.string.logerror), "FB email permission not given");
+                                    mail = "";
+                                }
+
+                                try {
+                                    mAppUser = new User(mAppUser != null ? mAppUser.getId() : -1,
+                                            false,
+                                            new UserData(
+                                                    Profile.getCurrentProfile().getFirstName(),
+                                                    Profile.getCurrentProfile().getLastName(),
+                                                    epoch,
+                                                    gender,
+                                                    mail
+                                            ));
 
                                     setLoggedWith(FACEBOOK);
                                     hpCallback.callback(true);
+                                }catch(NullPointerException e){
 
-                                } catch (JSONException e) {
                                     e.printStackTrace();
                                     hpCallback.callback(false);
                                 }
                             }
                         });
                     Bundle parameters = new Bundle();
-                    parameters.putString("fields", "id,name,email,gender, birthday");
+                    parameters.putString("fields", "id,name,email,gender,birthday");
                     request.setParameters(parameters);
                     request.executeAsync();
 
@@ -491,11 +521,12 @@ public class Helpers {
 
                 @Override
                 public void onError(FacebookException exception) {
+                    Helpers.showAlert(-12);
                     hpCallback.callback(false);
                 }
             });
 
-        ArrayList<String> fbperm = new ArrayList<String>();
+        ArrayList<String> fbperm = new ArrayList<>();
         fbperm.add("public_profile");
         fbperm.add("email");
         fbperm.add("user_birthday");
@@ -532,6 +563,7 @@ public class Helpers {
 
             @Override
             public void failure(TwitterException e) {
+                Helpers.showAlert(-13);
                 hpCallback.callback(false);
             }
         } );

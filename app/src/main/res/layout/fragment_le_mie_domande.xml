@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="it.suggestme.ui.fragment.LeMieDomandeFragment"
-    android:background="@drawable/le_mie_domande_background">
+    android:background="@drawable/bg_le_mie_domande">
 
 
     <ListView

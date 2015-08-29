@@ -11,7 +11,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -102,14 +101,14 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
         ArrayList<HamburgerItem> mainList = new ArrayList<>();
-        mainList.add(new HamburgerItem(getString(R.string.ham_lemiedomande),R.drawable.ic_ham_domande));
-        mainList.add(new HamburgerItem(getString(R.string.ham_categorie),R.drawable.ic_ham_question));
-        mainList.add(new HamburgerItem(getString(R.string.ham_login),R.drawable.ic_ham_login));
-        mainList.add(new HamburgerItem(getString(R.string.ham_about),R.drawable.ic_ham_about));
+        mainList.add(new HamburgerItem(getString(R.string.ham_lemiedomande),R.drawable.ic_ham_ask,getString(R.string.ham_icon_list_accessibility)));
+        mainList.add(new HamburgerItem(getString(R.string.ham_categorie),R.drawable.ic_ham_list,getString(R.string.ham_icon_ask_accessibility)));
+        mainList.add(new HamburgerItem(getString(R.string.ham_login),R.drawable.ic_ham_login,getString(R.string.ham_icon_login_accessibility)));
+        mainList.add(new HamburgerItem(getString(R.string.ham_about),R.drawable.ic_ham_about,getString(R.string.ham_icon_about_accessibility)));
 
         mMainDrawerListView.setAdapter(new HamburgerAdapter(
                 getActionBar().getThemedContext(),
-                R.layout.list_selected_row,
+                R.layout.item_hamburger,
                 mainList
         ));
         mMainDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
@@ -131,7 +130,7 @@ public class NavigationDrawerFragment extends Fragment {
     public void setUp(int fragmentId, DrawerLayout drawerLayout) {
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        mDrawerLayout.setDrawerShadow(R.drawable.br_drawer_shadow, GravityCompat.START);
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -174,7 +173,7 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        mDrawerToggle.setHomeAsUpIndicator (R.drawable.hamburger_icon);
+        mDrawerToggle.setHomeAsUpIndicator (R.drawable.ic_hamburger);
     }
 
     private void selectItem(int position) {
@@ -193,7 +192,7 @@ public class NavigationDrawerFragment extends Fragment {
     public void updateProfilePicFromFacebook(){
 
         if( Helpers.shared().getAppUser().getUserData().getName() != null &&
-                Helpers.shared().getAppUser().getUserData().getName() != "" &&
+                !Helpers.shared().getAppUser().getUserData().getName().equals("") &&
                 Helpers.shared().getAppUser().getUserData().getName().length() > 0 ) {
 
             TextView mUserNameTextView = (TextView) mRootView.findViewById(R.id.ham_head_userName);
@@ -217,7 +216,7 @@ public class NavigationDrawerFragment extends Fragment {
     public void updateProfilePicFromTwitter(){
 
         if( Helpers.shared().getAppUser().getUserData().getName() != null &&
-                Helpers.shared().getAppUser().getUserData().getName() != "" &&
+                !Helpers.shared().getAppUser().getUserData().getName().equals("") &&
                 Helpers.shared().getAppUser().getUserData().getName().length() > 0 ) {
 
             TextView mUserNameTextView = (TextView) mRootView.findViewById(R.id.ham_head_userName);

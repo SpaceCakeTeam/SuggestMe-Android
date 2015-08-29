@@ -53,23 +53,26 @@ public class LoginFragment extends Fragment {
                         return false;
                     firstTouchFired = true;
 
-                    Log.i(Helpers.getString(R.string.loginfo),"FACEBOOK");
-                    Helpers.shared().performFacebookLogin(LoginFragment.this, new HelperCallback() {
+                    Log.i(Helpers.getString(R.string.loginfo), "TWITTER");
+                    Helpers.shared().performTwitterLogin(LoginFragment.this, new HelperCallback() {
                         @Override
                         public void callback(Boolean success) {
                             firstTouchFired = false;
 
-                            if (!success)
+                            if (!success) {
+                                Helpers.showAlert(-13);
                                 return;
+                            }
 
                             Helpers.shared().communicationHandler.registrationRequest(new RequestCallback() {
+
                                 @Override
                                 public void callback(Boolean success) {
                                     if (success) {
                                         rootView.findViewById(R.id.login_social_main_button).setVisibility(View.GONE);
                                         rootView.findViewById(R.id.login_done).setVisibility(View.VISIBLE);
 
-                                        Helpers.shared().getNavigationDrawer().updateProfilePicFromFacebook();
+                                        Helpers.shared().getNavigationDrawer().updateProfilePicFromTwitter();
                                     }
                                 }
                             }, Helpers.shared().getAppUser().parse());
@@ -81,24 +84,25 @@ public class LoginFragment extends Fragment {
                         return false;
                     firstTouchFired = true;
 
-                    Log.i(Helpers.getString(R.string.loginfo), "TWITTER");
-                    Helpers.shared().performTwitterLogin(LoginFragment.this, new HelperCallback() {
+                    Log.i(Helpers.getString(R.string.loginfo),"FACEBOOK");
+                    Helpers.shared().performFacebookLogin(LoginFragment.this, new HelperCallback() {
                         @Override
                         public void callback(Boolean success) {
                             firstTouchFired = false;
 
-                            if (!success)
+                            if (!success) {
+                                Helpers.showAlert(-12);
                                 return;
+                            }
 
                             Helpers.shared().communicationHandler.registrationRequest(new RequestCallback() {
-
                                 @Override
                                 public void callback(Boolean success) {
                                     if (success) {
                                         rootView.findViewById(R.id.login_social_main_button).setVisibility(View.GONE);
                                         rootView.findViewById(R.id.login_done).setVisibility(View.VISIBLE);
 
-                                        Helpers.shared().getNavigationDrawer().updateProfilePicFromTwitter();
+                                        Helpers.shared().getNavigationDrawer().updateProfilePicFromFacebook();
                                     }
                                 }
                             }, Helpers.shared().getAppUser().parse());

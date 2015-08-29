@@ -8,10 +8,12 @@ public class HamburgerItem {
 
     private String title;
     private int icon;
+    private String accessibility;
 
-    public HamburgerItem( String title, int icon ) {
+    public HamburgerItem( String title, int icon, String accessibility ) {
         this.title = title;
         this.icon  = icon;
+        this.accessibility = accessibility;
     }
 
     public String getTitle() {
@@ -20,5 +22,9 @@ public class HamburgerItem {
 
     public int getIcon() {
         return icon;
+    }
+
+    public String getAccessibility(){
+        return accessibility;
     }
 }

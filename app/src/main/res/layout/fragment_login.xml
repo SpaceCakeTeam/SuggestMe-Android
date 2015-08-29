@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_background"
+    android:background="@drawable/bg_login"
     tools:context="it.suggestme.ui.fragment.LoginFragment">
 
 
@@ -15,11 +15,11 @@
 
     <Button
         android:id="@+id/login_social_main_button"
-        android:layout_width="250dp"
-        android:layout_height="150dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:gravity="center|center_horizontal|center_vertical"
         android:layout_gravity="center"
-        android:background="@color/palette_primary_light"/>
+        android:background="@drawable/btn_social_login_double"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -27,7 +27,7 @@
         android:text="@string/login_done"
         android:textSize="@dimen/text_size_medium"
         android:textColor="@color/palette_black"
-        android:background="@drawable/corner_radius"
+        android:background="@drawable/shape_corner_radius"
         android:id="@+id/login_done"
         android:layout_gravity="center"
         android:visibility="gone" />

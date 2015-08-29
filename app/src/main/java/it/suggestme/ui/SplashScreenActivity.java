@@ -10,6 +10,7 @@ import com.facebook.appevents.AppEventsLogger;
 
 import it.suggestme.R;
 import it.suggestme.controller.Helpers;
+import it.suggestme.controller.interfaces.RequestCallback;
 
 public class SplashScreenActivity extends Activity {
 
@@ -25,7 +26,6 @@ public class SplashScreenActivity extends Activity {
 
         if( !Helpers.shared().testGooglePlayServices(this) ) {
             Log.e(Helpers.getString(R.string.logerror), "No valid Google Play Services APK found.");
-            return;
         }
 
         Helpers.shared().initFBSdk();
