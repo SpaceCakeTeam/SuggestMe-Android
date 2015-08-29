@@ -22,7 +22,7 @@ public class CategoryAdapter extends ArrayAdapter<Category> {
         if(theView == null) {
             LayoutInflater li;
             li = LayoutInflater.from(getContext());
-            theView = li.inflate(R.layout.list_selected_row, null);
+            theView = li.inflate(R.layout.item_hamburger, null);
         }
         Category theCat = getItem(position);
         return theView;

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,14 +20,12 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import it.suggestme.R;
-import it.suggestme.controller.CommunicationHandler;
 import it.suggestme.controller.Helpers;
 import it.suggestme.controller.interfaces.RequestCallback;
 import it.suggestme.model.Category;
 import it.suggestme.model.Question;
 import it.suggestme.model.QuestionData;
 import it.suggestme.model.SubCategory;
-import it.suggestme.model.Suggest;
 
 public class ChatFragment extends Fragment {
 
@@ -40,12 +38,11 @@ public class ChatFragment extends Fragment {
     private Spinner mSpinner;
     private ImageButton mAnonButton;
     private TextView mQuestionText;
-    private TextView  mSuggestText;
 
     private String mQuestionBody;
     private String mSuggestBody;
+    private String mSettedSubCategory;
     private int categoryId;
-    private int subcategoryId;
     private Boolean anonflag;
 
     private Boolean fixedAnon;
@@ -79,28 +76,32 @@ public class ChatFragment extends Fragment {
         mAnonButton = (ImageButton)rootView.findViewById(R.id.anon_img);
         mQuestionText = (TextView)rootView.findViewById(R.id.question_cloud);
 
-        if( mQuestionBody == null || mQuestionBody.isEmpty() )
+        if( mQuestionBody == null || mQuestionBody.isEmpty() ) {
             setAnonFlag(true);
+            setSpinnerValues(Helpers.shared().getCategories());
+        }
 
         if( mQuestionBody != null && !mQuestionBody.isEmpty() ) {
             setAnonFlag(this.anonflag);
             mQuestionText.setText(mQuestionBody);
             mQuestionText.setVisibility(View.VISIBLE);
             mQuestionEditor.setVisibility(View.GONE);
+
+            setSpinnerSingleValue(mSettedSubCategory);
         }
 
         if( mSuggestBody != null && !mSuggestBody.isEmpty() ) {
-            mSuggestText = (TextView)rootView.findViewById(R.id.suggest_cloud);
+            TextView mSuggestText = (TextView) rootView.findViewById(R.id.suggest_cloud);
             mSuggestText.setVisibility(View.VISIBLE);
             mSuggestText.setText(mSuggestBody);
         }
 
         if(this.category.equals(SOCIAL))
-            rootView.setBackground(getResources().getDrawable(R.drawable.form_social_background));
+            rootView.setBackground(ContextCompat.getDrawable(Helpers.shared().getAppContext(),R.drawable.bg_form_social));
         else
-            rootView.setBackground(getResources().getDrawable(R.drawable.form_goods_background));
+            rootView.setBackground(ContextCompat.getDrawable(Helpers.shared().getAppContext(),R.drawable.bg_form_goods));
 
-        setSpinnerValues(Helpers.shared().getCategories());
+
 
         mAnonButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,12 +147,21 @@ public class ChatFragment extends Fragment {
         mSpinner.setAdapter(adapter);
     }
 
+    private void setSpinnerSingleValue(String mSettedSubCategory) {
+
+        ArrayList<String> subcat = new ArrayList<>();
+        subcat.add(mSettedSubCategory);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, subcat );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinner.setAdapter(adapter);
+    }
     private void sendQuestion() {
         this.mQuestionBody = mQuestionEditor.getText().toString();
         if(this.mQuestionBody.equals(""))
             return;
 
-        this.subcategoryId = retrieveSelectedSubcategoryID();
+        int subcategoryId = retrieveSelectedSubcategoryID();
 
         QuestionData questionData = new QuestionData(categoryId, subcategoryId, mQuestionBody, anonflag);
 
@@ -190,14 +200,15 @@ public class ChatFragment extends Fragment {
 
         anonflag = set;
         if(!anonflag)
-            mAnonButton.setBackground(getResources().getDrawable(R.drawable.ic_logged));
+            mAnonButton.setBackground(ContextCompat.getDrawable(Helpers.shared().getAppContext(), R.drawable.ic_logged));
         else
-            mAnonButton.setBackground(getResources().getDrawable(R.drawable.ic_anonymous));
+            mAnonButton.setBackground(ContextCompat.getDrawable(Helpers.shared().getAppContext(), R.drawable.ic_anonymous));
     }
 
     public void setQuestionToShow(Question theQuest) {
         this.mQuestionBody = theQuest.getQuestionData().getText();
         this.anonflag = theQuest.getQuestionData().getAnon();
+        this.mSettedSubCategory = Helpers.shared().getSubcategoryFromID(theQuest.getQuestionData().getCatId(),theQuest.getQuestionData().getSubCatId()).getName();
 
         if( theQuest.getSuggest() != null ) {
             this.mSuggestBody = theQuest.getSuggest().getText();

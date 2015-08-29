@@ -1,0 +1,34 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_tutorial_page_5"
+    android:id="@+id/tutorial_page_5">
+
+    <ImageButton
+        android:id="@+id/login_nonora_button"
+        android:background="@drawable/btn_non_ora"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:contentDescription="@string/notnow_btn_accessibility"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="50dp" />
+
+    <ImageView
+        android:id="@+id/img_dots_page_5"
+        android:contentDescription="@string/dots_page_5"
+        android:layout_width="100dp"
+        android:layout_height="10dp"
+        android:background="@drawable/ic_dots_page_5"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="10dp" />
+
+    <Button
+        android:id="@+id/login_social_tutorial_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center|center_horizontal|center_vertical"
+        android:layout_gravity="center"
+        android:background="@drawable/btn_social_login_double"/>
+
+</FrameLayout>

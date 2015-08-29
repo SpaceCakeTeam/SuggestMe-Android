@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 import it.suggestme.R;
@@ -84,7 +82,7 @@ public class LeMieDomandeFragment extends Fragment {
 
         mQuestionList.setAdapter(new ReplyListAdapter(
             getActivity().getApplicationContext(),
-            R.layout.le_mie_domande_list_item,
+            R.layout.item_list_le_mie_domande,
             mReplied ));
 
         mQuestionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -132,12 +130,6 @@ public class LeMieDomandeFragment extends Fragment {
             });
         }
         return rootView;
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override

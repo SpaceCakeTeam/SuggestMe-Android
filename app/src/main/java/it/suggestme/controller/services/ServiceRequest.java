@@ -74,6 +74,7 @@ public class ServiceRequest extends AsyncTask<Void,Void,JSONObject> {
             response = (JSONObject) new JSONTokener(responseString).nextValue();
         } catch (IOException | JSONException e) {
             e.printStackTrace();
+            return null;
         }
         return response;
     }

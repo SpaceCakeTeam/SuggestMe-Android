@@ -1,6 +1,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:background="@color/palette_white"
     android:layout_height="match_parent"
@@ -35,7 +34,7 @@
                 android:paddingEnd="50dp"
                 android:text=""
                 android:layout_gravity="end"
-                android:background="@drawable/cloud_right" />
+                android:background="@drawable/bg_cloud_right" />
 
             <TextView
                 android:visibility="gone"
@@ -53,7 +52,7 @@
                 android:paddingRight="10dp"
                 android:paddingEnd="10dp"
                 android:text=""
-                android:background="@drawable/cloud_left"
+                android:background="@drawable/bg_cloud_left"
                 android:layout_weight="1.09" />
         </LinearLayout>
     </ScrollView>
@@ -72,6 +71,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:id="@+id/hashtag_img"
+            android:contentDescription="@string/hashtag_accessibility"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:background="@drawable/ic_hashtag"/>
@@ -88,8 +88,8 @@
 
         <ImageButton
             android:id="@+id/anon_img"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
             android:layout_toRightOf="@id/subcategoy_spinner"
             android:layout_toEndOf="@id/subcategoy_spinner"
             android:layout_alignParentRight="true"

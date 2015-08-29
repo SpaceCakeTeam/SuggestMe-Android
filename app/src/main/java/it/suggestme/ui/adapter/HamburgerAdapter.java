@@ -1,8 +1,6 @@
 package it.suggestme.ui.adapter;
 
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +29,7 @@ public class HamburgerAdapter extends ArrayAdapter<HamburgerItem> {
         if(theView == null) {
             LayoutInflater li;
             li = LayoutInflater.from(getContext());
-            theView = li.inflate(R.layout.list_selected_row, null);
+            theView = li.inflate(R.layout.item_hamburger, null);
         }
 
         HamburgerItem pos = getItem(position);
@@ -41,6 +39,7 @@ public class HamburgerAdapter extends ArrayAdapter<HamburgerItem> {
             hamtext.setText(pos.getTitle());
 
             imview.setBackground(ContextCompat.getDrawable(getContext(), pos.getIcon()));
+            imview.setContentDescription(pos.getAccessibility());
         }
         return theView;
     }

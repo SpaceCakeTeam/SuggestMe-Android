@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Active tab -->
-    <item android:drawable="@drawable/categorie_goods_button" android:state_focused="false" android:state_pressed="false" />
-    <!-- Pressed tab -->
-    <item android:drawable="@drawable/categorie_goods_button_gradient" android:state_pressed="true"/>
-
-</selector>

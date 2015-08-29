@@ -37,22 +37,22 @@ public class TutorialPageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 
-        int layoutToLoad = R.layout.fragment_tutorial__page_1;
+        int layoutToLoad = R.layout.fragment_tutorial_page_1;
         switch (mTutorialPage) {
             case WELCOMEPAGE:
-                layoutToLoad = R.layout.fragment_tutorial__page_1;
+                layoutToLoad = R.layout.fragment_tutorial_page_1;
                 break;
             case ANONPAGE:
-                layoutToLoad = R.layout.fragment_tutorial__page_2;
+                layoutToLoad = R.layout.fragment_tutorial_page_2;
                 break;
             case CHATPAGE:
-                layoutToLoad = R.layout.fragment_tutorial__page_3;
+                layoutToLoad = R.layout.fragment_tutorial_page_3;
                 break;
             case WAITPAGE:
-                layoutToLoad = R.layout.fragment_tutorial__page_4;
+                layoutToLoad = R.layout.fragment_tutorial_page_4;
                 break;
             case LOGINPAGE:
-                layoutToLoad = R.layout.fragment_tutorial__page_5;
+                layoutToLoad = R.layout.fragment_tutorial_page_5;
                 break;
             default:
                 break;
@@ -69,23 +69,6 @@ public class TutorialPageFragment extends Fragment {
                         if (firstTouchFired)
                             return false;
                         firstTouchFired = true;
-                        Log.i(Helpers.getString(R.string.loginfo), "FACEBOOK");
-
-                        Helpers.shared().performFacebookLogin(TutorialPageFragment.this, new HelperCallback() {
-                            @Override
-                            public void callback(Boolean success) {
-                                firstTouchFired = false;
-                                if (!success)
-                                    return;
-
-                                login(Helpers.shared().getAppUser().parse());
-                            }
-                        });
-                        return true;
-                    } else {
-                        if (firstTouchFired)
-                            return false;
-                        firstTouchFired = true;
                         Log.i(Helpers.getString(R.string.loginfo), "TWITTER");
 
                         Helpers.shared().performTwitterLogin(TutorialPageFragment.this, new HelperCallback() {
@@ -95,6 +78,23 @@ public class TutorialPageFragment extends Fragment {
                                 if (!success) {
                                     return;
                                 }
+                                login(Helpers.shared().getAppUser().parse());
+                            }
+                        });
+                        return true;
+                    } else {
+                        if (firstTouchFired)
+                            return false;
+                        firstTouchFired = true;
+                        Log.i(Helpers.getString(R.string.loginfo), "FACEBOOK");
+
+                        Helpers.shared().performFacebookLogin(TutorialPageFragment.this, new HelperCallback() {
+                            @Override
+                            public void callback(Boolean success) {
+                                firstTouchFired = false;
+                                if (!success)
+                                    return;
+
                                 login(Helpers.shared().getAppUser().parse());
                             }
                         });

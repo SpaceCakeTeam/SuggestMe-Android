@@ -35,7 +35,7 @@ public class CommunicationHandler {
             public void callback(JSONObject response) {
                 Helpers.shared().removeSpinner();
 
-                if (response.optString("status").equalsIgnoreCase("ok")) {
+                if (response != null && response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
                     Log.i(Helpers.getString(R.string.loginfo), responseData.toString());
 
@@ -49,8 +49,12 @@ public class CommunicationHandler {
                             requestCallback.callback(success);
                         }
                     });
-                } else if (response.optString("status").equalsIgnoreCase("ko")) {
-                    Helpers.showAlert(response.optInt("errno"));
+                } else if (response == null || response.optString("status").equalsIgnoreCase("ko")) {
+                    if( response != null)
+                        Helpers.showAlert(response.optInt("errno"));
+                    else
+                        Helpers.showAlert(0);
+
                     requestCallback.callback(false);
                 }
             }
@@ -61,7 +65,7 @@ public class CommunicationHandler {
         new ServiceRequest(Helpers.getString(R.string.getcategories_uri), new JSONObject(), new ServiceCallback() {
             @Override
             public void callback(JSONObject response) {
-                if (response.optString("status").equalsIgnoreCase("ok")) {
+                if ( response != null && response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
                     Log.i(Helpers.getString(R.string.loginfo), responseData.toString());
 
@@ -74,8 +78,11 @@ public class CommunicationHandler {
                         e.printStackTrace();
                     }
                     requestCallback.callback(true);
-                } else if (response.optString("status").equalsIgnoreCase("ko")) {
-                    Helpers.showAlert(response.optInt("errno"));
+                } else if (response == null || response.optString("status").equalsIgnoreCase("ko")) {
+                    if( response != null )
+                        Helpers.showAlert(response.optInt("errno"));
+                    else
+                        Helpers.showAlert(0);
                     requestCallback.callback(false);
                 }
             }
@@ -88,7 +95,7 @@ public class CommunicationHandler {
             @Override
             public void callback(JSONObject response) {
                 Helpers.shared().removeSpinner();
-                if (response.optString("status").equalsIgnoreCase("ok")) {
+                if (response != null && response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
                     Log.i(Helpers.getString(R.string.loginfo), responseData.toString());
 
@@ -96,8 +103,13 @@ public class CommunicationHandler {
                     Helpers.shared().getQuestions().add(question);
                     Helpers.shared().saveObj("questions", Parser.parseQuestions(Helpers.shared().getQuestions()));
                     requestCallback.callback(true);
-                } else if (response.optString("status").equalsIgnoreCase("ko")) {
-                    Helpers.showAlert(response.optInt("errno"));
+
+                } else if (response == null || response.optString("status").equalsIgnoreCase("ko")) {
+                    if( response != null )
+                        Helpers.showAlert(response.optInt("errno"));
+                    else
+                        Helpers.showAlert(0);
+
                     requestCallback.callback(false);
                 }
             }
@@ -105,10 +117,12 @@ public class CommunicationHandler {
     }
 
     public void getSuggestsRequest(JSONArray questionsId, final RequestCallback requestCallback) {
+        Helpers.shared().setSpinner();
         new ServiceRequest(Helpers.getString(R.string.getsuggests_uri), questionsId, new ServiceCallback() {
             @Override
             public void callback(JSONObject response) {
-                if (response.optString("status").equalsIgnoreCase("ok")) {
+                Helpers.shared().removeSpinner();
+                if (response != null && response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
                     Log.i(Helpers.getString(R.string.loginfo), responseData.toString());
 
@@ -125,8 +139,11 @@ public class CommunicationHandler {
                     }
                     Helpers.shared().saveObj("questions", Parser.parseQuestions(Helpers.shared().getQuestions()));
                     requestCallback.callback(true);
-                } else if (response.optString("status").equalsIgnoreCase("ko")) {
-                    Helpers.showAlert(response.optInt("errno"));
+                } else if ( response == null || response.optString("status").equalsIgnoreCase("ko")) {
+                    if( response != null )
+                        Helpers.showAlert(response.optInt("errno"));
+                    else
+                        Helpers.showAlert(0);
                     requestCallback.callback(false);
                 }
             }
@@ -137,13 +154,18 @@ public class CommunicationHandler {
         new ServiceRequest(Helpers.getString(R.string.onlypush_uri), pushtoken, new ServiceCallback(){
             @Override
             public void callback(JSONObject response) {
-                if( response.optString("status").equalsIgnoreCase("ok") ) {
+                if( response != null && response.optString("status").equalsIgnoreCase("ok") ) {
                     JSONObject resposeData = response.optJSONObject("data");
                     Helpers.shared().saveInt(Helpers.INSTANCEIDSAVEDLBL,1);
                     requestCallback.callback(true);
-                }else if( response.optString("status").equalsIgnoreCase("ko")){
-                    Helpers.shared().saveInt(Helpers.INSTANCEIDSAVEDLBL,0);
-                    Helpers.showAlert(response.optInt("errno"));
+                }else if( response == null || response.optString("status").equalsIgnoreCase("ko")){
+                    Helpers.shared().saveInt(Helpers.INSTANCEIDSAVEDLBL, 0);
+
+                    if( response != null )
+                        Helpers.showAlert(response.optInt("errno"));
+                    else
+                        Helpers.showAlert(0);
+
                     requestCallback.callback(false);
                 }
             }

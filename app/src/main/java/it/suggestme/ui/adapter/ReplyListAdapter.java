@@ -1,6 +1,5 @@
 package it.suggestme.ui.adapter;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 
 import it.suggestme.R;
 import it.suggestme.controller.Helpers;
-import it.suggestme.model.Category;
 import it.suggestme.model.Question;
 import it.suggestme.model.ReplyListItem;
 import it.suggestme.ui.fragment.ChatFragment;
@@ -32,7 +30,7 @@ public class ReplyListAdapter extends ArrayAdapter<ReplyListItem> {
         if(theView == null) {
             LayoutInflater li;
             li = LayoutInflater.from(getContext());
-            theView = li.inflate(R.layout.le_mie_domande_list_item, null);
+            theView = li.inflate(R.layout.item_list_le_mie_domande, null);
         }
 
         final Question item = getItem(position).getQuestion();
@@ -61,7 +59,7 @@ public class ReplyListAdapter extends ArrayAdapter<ReplyListItem> {
             if(item.getSuggest()!=null)
                 replied.setBackground(getContext().getResources().getDrawable(R.drawable.ic_questionlist_replied));
             else
-                replied.setBackground(getContext().getResources().getDrawable(R.drawable.ic_questionlist_pending_suggest));
+                replied.setBackground(getContext().getResources().getDrawable(R.drawable.ic_questionlist_pending));
         }
 
         return theView;

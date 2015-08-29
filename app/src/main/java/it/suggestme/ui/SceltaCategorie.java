@@ -16,12 +16,12 @@ import android.view.Gravity;
 import android.support.v4.widget.DrawerLayout;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.facebook.appevents.AppEventsLogger;
 
 import it.suggestme.R;
 import it.suggestme.controller.Helpers;
+import it.suggestme.controller.interfaces.RequestCallback;
 import it.suggestme.controller.services.RegistrationIntentService;
 import it.suggestme.ui.fragment.AboutFragment;
 import it.suggestme.ui.fragment.ChatFragment;
@@ -51,6 +51,13 @@ public class SceltaCategorie extends AppCompatActivity
         Helpers.shared().initFabric();
         Helpers.shared().setDataUser();
 
+        Helpers.shared().communicationHandler.categoryRequest(new RequestCallback() {
+            @Override
+            public void callback(Boolean success) {
+
+            }
+        });
+
         if( Helpers.shared().testGooglePlayServices(this) ) {
 
             Helpers.shared().setBroadcastReceiver(new BroadcastReceiver() {
@@ -66,12 +73,11 @@ public class SceltaCategorie extends AppCompatActivity
 
             if( Helpers.shared().getSavedInt(Helpers.INSTANCEIDSAVEDLBL) == 1 )
                 startService(new Intent(this, RegistrationIntentService.class));
-
         }
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            getWindow().setStatusBarColor(this.getResources().getColor(R.color.palette_white_transparent));
+            getWindow().setStatusBarColor(this.getResources().getColor(R.color.palette_primary_light));
         }
 
         NavigationDrawerFragment mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -127,7 +133,7 @@ public class SceltaCategorie extends AppCompatActivity
 
         ImageView mImageV = new ImageView(actionBar.getThemedContext());
         mImageV.setScaleType(ImageView.ScaleType.CENTER);
-        mImageV.setImageResource(R.drawable.navbar_logo);
+        mImageV.setImageResource(R.drawable.logo_navbar);
 
         ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT,ActionBar.LayoutParams.WRAP_CONTENT,Gravity.END | Gravity.CENTER_VERTICAL);
         layoutParams.topMargin = 10;
@@ -136,7 +142,6 @@ public class SceltaCategorie extends AppCompatActivity
         mImageV.setLayoutParams(layoutParams);
         actionBar.setCustomView(mImageV);
     }
-
 
     @Override
     protected void onResume() {
