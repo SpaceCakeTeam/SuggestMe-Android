@@ -71,8 +71,10 @@ public class SceltaCategorie extends AppCompatActivity
                 }
             });
 
-            if( Helpers.shared().getSavedInt(Helpers.INSTANCEIDSAVEDLBL) == 1 )
+            //if( Helpers.shared().getSavedInt(Helpers.INSTANCEIDSAVEDLBL) == 1 )
                 startService(new Intent(this, RegistrationIntentService.class));
+        }else{
+            Log.e(getString(R.string.logerror), "NO GCM");
         }
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

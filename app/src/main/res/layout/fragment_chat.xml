@@ -88,7 +88,7 @@
 
         <ImageButton
             android:id="@+id/anon_img"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_width="wrap_content"
             android:layout_toRightOf="@id/subcategoy_spinner"
             android:layout_toEndOf="@id/subcategoy_spinner"

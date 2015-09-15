@@ -1,4 +1,4 @@
-package it.suggestme.ui.tutorialpages;
+package it.suggestme.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
