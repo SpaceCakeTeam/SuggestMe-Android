@@ -4,7 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import it.suggestme.ui.tutorialpages.TutorialPageFragment;
+import it.suggestme.ui.fragment.TutorialPageFragment;
 
 public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 

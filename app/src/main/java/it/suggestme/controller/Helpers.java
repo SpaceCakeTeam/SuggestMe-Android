@@ -255,7 +255,7 @@ public class Helpers {
         return new AlertDialog.Builder(mAppContext).setTitle(alert.optString("title")).setMessage(alert.optString("message")).show();
     }
 
-    public void setSpinner() {
+    public void setProgressDialog() {
         if( mProgressDialog == null )
             mProgressDialog = new ProgressDialog(getAppContext());
 
@@ -264,7 +264,7 @@ public class Helpers {
         mProgressDialog.show();
     }
 
-    public void removeSpinner() {
+    public void removeProgressDialog() {
         if( mProgressDialog == null )
             return;
 

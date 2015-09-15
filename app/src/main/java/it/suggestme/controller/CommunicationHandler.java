@@ -29,11 +29,11 @@ public class CommunicationHandler {
     public CommunicationHandler() {}
 
     public void registrationRequest( final RequestCallback requestCallback, JSONObject userData ) {
-        Helpers.shared().setSpinner();
+        Helpers.shared().setProgressDialog();
         new ServiceRequest(Helpers.getString(R.string.registration_uri), userData, new ServiceCallback() {
             @Override
             public void callback(JSONObject response) {
-                Helpers.shared().removeSpinner();
+                Helpers.shared().removeProgressDialog();
 
                 if (response != null && response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
@@ -90,11 +90,11 @@ public class CommunicationHandler {
     }
 
     public void askSuggestionRequest(final QuestionData questionData, final RequestCallback requestCallback) {
-        Helpers.shared().setSpinner();
+        Helpers.shared().setProgressDialog();
         new ServiceRequest(Helpers.getString(R.string.asksuggestion_uri), questionData.parse(), new ServiceCallback() {
             @Override
             public void callback(JSONObject response) {
-                Helpers.shared().removeSpinner();
+                Helpers.shared().removeProgressDialog();
                 if (response != null && response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
                     Log.i(Helpers.getString(R.string.loginfo), responseData.toString());
@@ -117,11 +117,11 @@ public class CommunicationHandler {
     }
 
     public void getSuggestsRequest(JSONArray questionsId, final RequestCallback requestCallback) {
-        Helpers.shared().setSpinner();
+       // Helpers.shared().setProgressDialog();
         new ServiceRequest(Helpers.getString(R.string.getsuggests_uri), questionsId, new ServiceCallback() {
             @Override
             public void callback(JSONObject response) {
-                Helpers.shared().removeSpinner();
+                //Helpers.shared().removeProgressDialog();
                 if (response != null && response.optString("status").equalsIgnoreCase("ok")) {
                     JSONObject responseData = response.optJSONObject("data");
                     Log.i(Helpers.getString(R.string.loginfo), responseData.toString());
