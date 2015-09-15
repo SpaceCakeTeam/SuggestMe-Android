@@ -111,7 +111,7 @@ public class PushListenerService extends GcmListenerService {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(getString(R.string.app_name))
-                .setContentText(Helpers.getString(R.string.push_notification_message) + " " + message)
+                .setContentText(Helpers.getString(R.string.push_notification_message))
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
