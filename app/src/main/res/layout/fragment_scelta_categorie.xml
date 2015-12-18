@@ -15,7 +15,7 @@
 
     <ImageButton
         android:layout_width="match_parent"
-        android:layout_height="260dp"
+        android:layout_height="270dp"
         android:id="@+id/social_imgbtn"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -32,7 +32,6 @@
         android:layout_below="@+id/social_imgbtn"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp"
         android:contentDescription="@string/goods_btn_accessibility"
         android:background="@drawable/selector_btn_categorie_goods" />
 

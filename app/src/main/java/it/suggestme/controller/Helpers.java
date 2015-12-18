@@ -106,7 +106,7 @@ public class Helpers {
 
     private Helpers() {
         try {
-            alerts = new JSONObject() //TODO
+            alerts = new JSONObject()
                     .put( "0" , new JSONObject().put("title", getString(R.string.error)).put("message", getString(R.string.nointernet)).put("cancel", getString(R.string.ok)))
                     .put("-1", new JSONObject().put("title", "").put("message", "").put("cancel", ""))
                     .put("-2" , new JSONObject().put("title", "").put("message", "").put("cancel", ""))

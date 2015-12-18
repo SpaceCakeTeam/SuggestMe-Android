@@ -1,14 +1,17 @@
 package it.suggestme.ui.fragment;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import it.suggestme.R;
+import it.suggestme.controller.Helpers;
 
 public class AboutFragment extends Fragment {
 
@@ -27,7 +30,11 @@ public class AboutFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_about, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_about, container, false);
+
+        ((TextView) rootView.findViewById(R.id.about_textview)).setTypeface(Typeface.createFromAsset(getActivity().getApplicationContext().getAssets(), Helpers.getString(R.string.fontpath) + Helpers.getString(R.string.fontname)));
+
+        return rootView;
     }
 
     @Override
