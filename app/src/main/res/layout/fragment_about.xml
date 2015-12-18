@@ -13,15 +13,14 @@
         android:contentDescription="@string/aboutlogo_accessibility"
         android:background="@drawable/logo_about"/>
 
-
     <TextView
+        android:id="@+id/about_textview"
         android:layout_width="match_parent"
-        android:layout_height="145dp"
-        android:layout_gravity="center_horizontal|bottom"
-        android:textSize="18sp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:textSize="28sp"
         android:padding="5dp"
         android:textColor="@color/palette_white"
         android:text="@string/about" />
-
 
 </FrameLayout>
