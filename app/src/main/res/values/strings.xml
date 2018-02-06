@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Server -->
+        <!-- Staging -->
+    <!--<string name="base_url">https://server.federicomaggi.me/</string>-->
+
+        <!-- Production -->
+    <string name="base_url">https://services.suggestme.us/</string>
+    <string name="registration_uri">registration</string>
+    <string name="getcategories_uri">getcategories</string>
+    <string name="asksuggestion_uri">asksuggestion</string>
+    <string name="getsuggests_uri">getsuggests</string>
+    <string name="onlypush_uri">onlypush</string>
+    <string name="secret">THISSHOULDBEASECRET</string>
+
+    <!-- Social Login -->
+    <string name="facebook_app_id">0000000000000000</string>
+    <string name="twitter_api_key">twitter-id</string>
+    <string name="twitter_secret">twitter-secret</string>
+
+    <!-- Push Notification -->
+    <string name="google_gcm_api_key">a-google-gcm-api-key</string>
+    <string name="google_gcm_sender_id">a-google-gcm-id</string>
+
+    <!-- Misc -->
+    <string name="app_name">SuggestMe</string>
+    <string name="ok">OK</string>
+    <string name="push_notification_message">Una nuova risposta per te!</string>
+    <string name="loading">Attendere</string>
+    <string name="loadingmessage">Contatto il server..</string>
+    <string name="about">SuggestMe è come un amico sincero, disponibile e sempre pronto ad aiutarti dandoti consigli in ogni ambito della tua vita.\nTi daremo consigli su tutto ciò che vorrai, senza secondi fini e nel massimo della privacy, troppo spesso violata quando ci si rivolge agli amici sbagliati.</string>
+    <string name="login_done">Login effettuata</string>
+    <string name="fontpath">font/</string>
+    <string name="fontname">freestylescript.TTF</string>
+
+    <!-- Hamburger -->
+    <string name="navigation_drawer_open">Apri l\'hamburger menu</string>
+    <string name="navigation_drawer_close">Chiudi l\'hamburger menu</string>
+    <string name="ham_lemiedomande">Le mie domande</string>
+    <string name="ham_categorie">Categorie</string>
+    <string name="ham_login">Login</string>
+    <string name="ham_about">About</string>
+    <string name="anonymous_label">Utente anonimo</string>
+
+    <!-- Chat -->
+    <string name="send">Invia</string>
+    <string name="edittext_hint">Chiedi pure..</string>
+
+    <!-- Errors -->
+    <string name="error">Errore</string>
+    <string name="nointernet">Connessione dati assente</string>
+    <string name="tutorial_err_lbl">TUTORIAL</string>
+    <string name="tutorial_err_pagenotfound">Impossibile trovare la pagina del tutorial selezionata</string>
+    <string name="nocategories">Impossibile scaricare le categorie</string>
+    <string name="genericerror">Errore generico</string>
+    <string name="senderror">Impossibile inviare la domanda. Riprova.</string>
+    <string name="profilePic404">Impossibile scaricare la foto profilo.</string>
+    <string name="noGplayServices">Google Play Services non installati</string>
+    <string name="facebookloginfail">Impossibile collegarsi a Facebook</string>
+    <string name="twitterloginfail">Impossibile collegarsi a Twitter</string>
+
+    <!-- Accessibility -->
+    <string name="one_accessibility">uno</string>
+    <string name="two_accessibility">due</string>
+    <string name="three_accessibility">tre</string>
+    <string name="four_accessibility">quattro</string>
+    <string name="five_accessibility">cinque</string>
+    <string name="dots_page_1">Indicatore pagina 1</string>
+    <string name="dots_page_2">Indicatore pagina 2</string>
+    <string name="dots_page_3">Indicatore pagina 3</string>
+    <string name="dots_page_4">Indicatore pagina 4</string>
+    <string name="dots_page_5">Indicatore pagina 5</string>
+    <string name="notnow_btn_accessibility">Non ora</string>
+    <string name="anonymous_label_button">Bottone per attivare la modalità anonima</string>
+    <string name="goods_btn_accessibility">Bottone categoria Goods</string>
+    <string name="social_btn_accessibility">Bottone categoria Social</string>
+    <string name="category_social_accessibility">Categoria Social</string>
+    <string name="category_goods_accessibility">categoria Goods</string>
+    <string name="not_replied_accessibility">Domanda non ancora risposta</string>
+    <string name="replied_accessibility">Domanda risposta</string>
+    <string name="hashtag_accessibility">Hashtag</string>
+    <string name="aboutlogo_accessibility">Cos\'è SuggestMe</string>
+    <string name="ham_icon_generic_accessibility">Icona</string>
+    <string name="ham_icon_about_accessibility">Icona cos\'è SuggestMe</string>
+    <string name="ham_icon_list_accessibility">Icona le mie domande</string>
+    <string name="ham_icon_ask_accessibility">Icona scegli categoria</string>
+    <string name="ham_icon_login_accessibility">Icona login</string>
+
+    <!-- Logging -->
+    <string name="loginfo">SUGGESTME_INFO</string>
+    <string name="logerror">SUGGESTME_ERROR</string>
+
+</resources>
