@@ -32,3 +32,4 @@ Thumbs.db
 .gradle
 build/
 app/fabric.properties
+app/google-services.json
